@@ -9,6 +9,7 @@
 <meta property="og:description" content="Lightweight SteelSeries GG replacement for the Arctis Nova Pro Wireless.">
 <meta property="og:image" content="https://thibautgnt.github.io/NovaPanel/social-preview.png">
 <link rel="icon" href="logo.png">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <style>
   :root {
     --bg: #111214; --panel: #1b1c20; --line: #2a2c32; --text: #ececee; --muted: #8b8e96; --accent: #5b8def;
@@ -94,8 +95,8 @@
     </div>
     <p class="small"><span lang="en">Free and open source · MIT license · Linux: install from source</span><span lang="fr">Gratuit et open source · licence MIT · Linux : installation depuis les sources</span></p>
     <div class="demo" id="demo">
-      <img lang="en" class="shot" src="screenshot.png" alt="NovaPanel">
-      <img lang="fr" class="shot" src="fr/screenshot.png" alt="NovaPanel">
+      <img loading="lazy" lang="en" class="shot" src="screenshot.png" alt="NovaPanel">
+      <img loading="lazy" lang="fr" class="shot" src="fr/screenshot.png" alt="NovaPanel">
       <button class="btn primary play" type="button"><span lang="en">Try the live demo</span><span lang="fr">Essayer la démo</span></button>
     </div>
     <p class="small demo-hint"><span lang="en">Live demo in your browser, with a simulated base station. Scroll over the base to turn the dial, click the Mic tile to mute.</span><span lang="fr">Démo en direct dans le navigateur, avec une base simulée. Faites défiler sur la base pour tourner la molette, cliquez sur la tuile Micro pour le couper.</span></p>
@@ -132,10 +133,10 @@
 
   <section>
     <div class="pair">
-      <img lang="en" src="screenshot-eq.png" alt="Equalizer">
-      <img lang="fr" src="fr/screenshot-eq.png" alt="Equalizer">
-      <img lang="en" src="screenshot-screen.png" alt="Base station screen">
-      <img lang="fr" src="fr/screenshot-screen.png" alt="Base station screen">
+      <img loading="lazy" lang="en" src="screenshot-eq.png" alt="Equalizer">
+      <img loading="lazy" lang="fr" src="fr/screenshot-eq.png" alt="Equalizer">
+      <img loading="lazy" lang="en" src="screenshot-screen.png" alt="Base station screen">
+      <img loading="lazy" lang="fr" src="fr/screenshot-screen.png" alt="Base station screen">
     </div>
   </section>
 
@@ -239,7 +240,7 @@
   // ~10 Mo a telecharger : lancement automatique seulement sur grand ecran sans economiseur de donnees
   if (matchMedia('(min-width: 760px)').matches && !navigator.connection?.saveData) {
     demo.classList.add('auto');
-    startDemo();
+    addEventListener('load', () => (window.requestIdleCallback || setTimeout)(startDemo));
   }
   document.getElementById('lang').onclick = () => {
     const l = root.dataset.lang === 'fr' ? 'en' : 'fr';
