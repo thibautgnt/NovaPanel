@@ -22,6 +22,8 @@ English · [Français](README.fr.md)
 
 ## Why
 
+It started with a small annoyance: the base station stays powered over USB when the computer is off, so its screen stayed lit all night. NovaPanel was first written to turn that screen off in the evening, when the computer sleeps or shuts down. It then grew into a full replacement for GG.
+
 SteelSeries GG is a heavy app with several background services, only to change a few settings that are stored in the base station itself. NovaPanel talks to the base station directly over USB and does the same job in one small app that lives in the system tray.
 
 > [!IMPORTANT]
@@ -40,6 +42,7 @@ SteelSeries GG is a heavy app with several background services, only to change a
 - **Base station**: screen brightness and dimming, line out, wireless mode, Bluetooth.
 - **Batteries**: tray icon with the headset level, low battery alert, notification when the spare battery is full.
 - **Automation**: per-app equalizer (switches when a game comes to the foreground), global shortcuts (`Ctrl+Alt+N` noise cancelling mode, `Ctrl+Alt+B` black screen, `Ctrl+Alt+P` next screen).
+- **English and French** interface, following the system language.
 - **GG switch**: stop GG and keep it from starting with Windows, or bring it back for firmware updates.
 
 <table>
@@ -53,16 +56,16 @@ SteelSeries GG is a heavy app with several background services, only to change a
 
 ### Windows
 
-1. Download **NovaPanel-Windows.zip** from the [latest release](https://github.com/thibautgnt/NovaPanel/releases/latest).
-2. Unzip it anywhere (for example `C:\Program Files\NovaPanel` or your Documents folder) and run `NovaPanel.exe`.
-3. In **Settings**, turn on *Launch NovaPanel at startup* and, if you like, stop GG.
+1. Download **[NovaPanel-Setup.exe](https://github.com/thibautgnt/NovaPanel/releases/latest/download/NovaPanel-Setup.exe)** and run it. No administrator rights needed.
+2. In **Settings**, turn on *Launch NovaPanel at startup* and, if you like, stop GG.
 
-The app is not code-signed yet: on first launch, Windows SmartScreen may ask you to confirm (*More info → Run anyway*).
+The installer is not code-signed yet: Windows SmartScreen may ask you to confirm (*More info → Run anyway*). A portable zip is also available in the [release](https://github.com/thibautgnt/NovaPanel/releases/latest).
 
 ### macOS
 
-1. Download **NovaPanel-macOS.zip** from the [latest release](https://github.com/thibautgnt/NovaPanel/releases/latest) and move `NovaPanel.app` to *Applications*.
-2. The app is not notarized: right-click it and choose *Open* the first time, or run `xattr -dr com.apple.quarantine /Applications/NovaPanel.app`.
+Download **[NovaPanel.dmg](https://github.com/thibautgnt/NovaPanel/releases/latest/download/NovaPanel.dmg)**, open it and drag NovaPanel to *Applications*.
+
+The app is not notarized yet: the first time, macOS refuses to open it. Go to *System Settings → Privacy & Security* and click *Open Anyway*.
 
 ### Linux
 
@@ -122,9 +125,10 @@ Firmware updates still need GG. Use *Reactivate GG* in **Settings**, update, the
 pip install -e .[dev]
 pytest
 python packaging/build.py   # dist/NovaPanel (Windows) or dist/NovaPanel.app (macOS)
+packaging/macos/make_dmg.sh # macOS: dist/NovaPanel.dmg
 ```
 
-Pushing a `v*` tag builds both packages on GitHub Actions and attaches them to the release.
+The Windows installer is built with [Inno Setup](https://jrsoftware.org/isinfo.php) from `packaging/windows/novapanel.iss`. Pushing a `v*` tag builds both packages on GitHub Actions and attaches them to the release.
 
 ## Credits
 

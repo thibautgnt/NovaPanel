@@ -1,4 +1,5 @@
 """Construit NovaPanel.exe (Windows) ou NovaPanel.app (macOS) avec PyInstaller."""
+import plistlib
 import sys
 from pathlib import Path
 
@@ -20,3 +21,12 @@ for d in ("ui", "fonts", "assets"):
 if sys.platform == "win32":
     args += ["--collect-submodules", "winrt"]
 PyInstaller.__main__.run(args)
+
+if sys.platform == "darwin":
+    sys.path.insert(0, str(ROOT))
+    from novapanel import __version__
+    info = ROOT / "dist" / "NovaPanel.app" / "Contents" / "Info.plist"
+    plist = plistlib.loads(info.read_bytes())
+    plist.update(CFBundleShortVersionString=__version__, CFBundleVersion=__version__,
+                 NSHighResolutionCapable=True, LSMinimumSystemVersion="11.0")
+    info.write_bytes(plistlib.dumps(plist))

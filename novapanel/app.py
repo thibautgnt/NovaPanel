@@ -16,9 +16,10 @@ from PySide6.QtWebEngineCore import QWebEnginePage, QWebEngineSettings
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWidgets import QApplication, QMainWindow, QMenu, QMessageBox, QSystemTrayIcon
 
-from . import __version__, config, oled, system
+from . import __version__, config, i18n, oled, system
 from .autoeq import AutoEq
 from .device import Base, battery_percent
+from .i18n import t
 from .media import NowPlaying
 from .osd import Osd
 from .screen import Compositor, overlay_text
@@ -30,10 +31,8 @@ if sys.platform == "win32":
 HERE = Path(__file__).resolve().parent
 UI = HERE / "ui" / "index.html"
 ICON = HERE / "assets" / "icon.png"
-ANC_NAMES = ["Réduction de bruit désactivée", "Mode transparence", "Réduction de bruit activée"]
 ANC_COLORS = ["#8a8d96", "#3fb6a8", "#5b8def"]
 PAGES = ["clock", "music", "pc", "rotate"]
-PAGE_NAMES = {"clock": "Horloge", "music": "Musique", "pc": "PC", "rotate": "Défilement"}
 EQ_BASE = ["Flat", "Bass Boost", "Focus", "Smiley"]
 OK, DANGER, MUTED = "#3fb950", "#f85149", "#8a8d96"
 
@@ -100,6 +99,10 @@ class Api(QObject):
     @Slot(result=str)
     def getConfig(self):
         return json.dumps(self.app.cfg)
+
+    @Slot(result=str)
+    def getStrings(self):
+        return json.dumps({"lang": i18n.lang, **i18n.STRINGS[i18n.lang]})
 
     @Slot(result=str)
     def getMeta(self):
@@ -231,7 +234,8 @@ class NovaPanel:
         self.tray = QSystemTrayIcon(tray_icon({}))
         self.tray.setToolTip("NovaPanel")
         self.tray.activated.connect(self._tray_click)
-        self.tray.setContextMenu(self._menu())
+        self.menu = self._menu()
+        self.tray.setContextMenu(self.menu)
         self.tray.show()
 
         self.bridge.state.connect(self._on_state)
@@ -256,21 +260,29 @@ class NovaPanel:
 
     def _menu(self):
         m = QMenu()
-        m.addAction("Ouvrir NovaPanel", self.show_window)
+        self.open_action = m.addAction("", self.show_window)
         m.addSeparator()
         self.anc_actions = []
-        for i, label in enumerate(ANC_NAMES):
-            a = QAction(label, m, checkable=True)
+        for i in range(3):
+            a = QAction(m, checkable=True)
             a.triggered.connect(lambda _c, i=i: self.send("anc", i))
             m.addAction(a)
             self.anc_actions.append(a)
         m.addSeparator()
-        self.black_action = QAction("Écran de la base éteint", m, checkable=True)
+        self.black_action = QAction(m, checkable=True)
         self.black_action.triggered.connect(lambda on: self.force_black(on))
         m.addAction(self.black_action)
         m.addSeparator()
-        m.addAction("Quitter", self.quit)
+        self.quit_action = m.addAction("", self.quit)
+        self._translate_menu()
         return m
+
+    def _translate_menu(self):
+        self.open_action.setText(t("open"))
+        for a, label in zip(self.anc_actions, t("anc_names")):
+            a.setText(label)
+        self.black_action.setText(t("base_screen_off"))
+        self.quit_action.setText(t("quit"))
 
     def _tray_click(self, reason):
         if reason == QSystemTrayIcon.Trigger and sys.platform != "darwin":
@@ -295,6 +307,10 @@ class NovaPanel:
         config.save(self.cfg)
         if key == "hotkeys":
             self.watcher.set_hotkeys(value)
+        if key == "language":
+            i18n.set_language(value)
+            self._translate_menu()
+            self._update_tooltip()
         self.comp.reset()
         self.api.configChanged.emit(json.dumps(self.cfg))
 
@@ -325,10 +341,10 @@ class NovaPanel:
             label = val
         elif kind == "curve":
             self.send_eq(json.loads(val))
-            label = "courbe précédente"
+            label = t("prev_curve")
         else:
             return
-        self.show_osd(f"Égaliseur : {label}" + (f" ({app})" if app else ""))
+        self.show_osd(t("osd_eq", label=label) + (f" ({app})" if app else ""))
 
     def _check_rules(self):
         if self.cfg["eq_rules"] and self.state.get("connected"):
@@ -356,44 +372,45 @@ class NovaPanel:
                 self.io.submit(self.base.hardware_volume_mode)
             self.comp.reset()
 
-        tip = "NovaPanel"
-        if s.get("headset") in ("online", "charging"):
-            tip += f" — casque {battery_percent(s.get('battery', 0))} %"
-            if s.get("mic_muted"):
-                tip += " — micro coupé"
-        elif s.get("connected"):
-            tip += " — casque éteint"
-        else:
-            tip += " — base non détectée"
-        self.tray.setToolTip(tip)
+        self._update_tooltip()
 
         # bulle a l'ecran pour les changements faits depuis le casque
         if old.get("connected") and s.get("headset") == "online":
             if "mic_muted" in old and s.get("mic_muted") != old.get("mic_muted") and self.cfg["osd_mic"]:
-                self.show_osd("Micro coupé", DANGER) if s["mic_muted"] else self.show_osd("Micro activé", OK)
+                self.show_osd(t("info_mic"), DANGER) if s["mic_muted"] else self.show_osd(t("mic_on"), OK)
             if "anc" in old and s.get("anc") != old.get("anc") and s["anc"] < 3:
-                self.show_osd(ANC_NAMES[s["anc"]], ANC_COLORS[s["anc"]])
+                self.show_osd(t("anc_names")[s["anc"]], ANC_COLORS[s["anc"]])
         if old.get("headset") != s.get("headset") and old.get("connected") and s.get("connected"):
             if s.get("headset") == "online" and old.get("headset") == "offline":
-                self.show_osd(f"Casque connecté · {battery_percent(s.get('battery', 0))} %", OK)
+                self.show_osd(t("headset_back", p=battery_percent(s.get("battery", 0))), OK)
             elif s.get("headset") == "offline" and old.get("headset") == "online":
-                self.show_osd("Casque éteint", MUTED)
+                self.show_osd(t("headset_off"), MUTED)
 
         lvl, low = s.get("battery"), self.cfg["low_battery_level"]
         if s.get("headset") == "online" and lvl is not None and low > 0:
             if lvl <= low and not self._low_notified:
                 self._low_notified = True
-                self.tray.showMessage("Batterie du casque faible",
-                                      f"Plus que {battery_percent(lvl)} %. Échangez avec la batterie de rechange.",
+                self.tray.showMessage(t("low_title"), t("low_body", p=battery_percent(lvl)),
                                       QSystemTrayIcon.Warning, 8000)
-                self.comp.toast(lambda: overlay_text("BATTERIE FAIBLE",
-                                                    f"casque à {battery_percent(lvl)} %"), 5)
+                self.comp.toast(lambda: overlay_text(t("oled_low"), t("oled_low_line", p=battery_percent(lvl))), 5)
             elif lvl > low:
                 self._low_notified = False
         if (self.cfg["notify_spare_full"] and old.get("spare_battery") is not None
                 and old["spare_battery"] < 8 and s.get("spare_battery") == 8):
-            self.tray.showMessage("Batterie de rechange chargée", "La batterie dans la base est pleine.",
+            self.tray.showMessage(t("spare_title"), t("spare_body"),
                                   QSystemTrayIcon.Information, 6000)
+
+    def _update_tooltip(self):
+        s, tip = self.state, "NovaPanel"
+        if s.get("headset") in ("online", "charging"):
+            tip += " — " + t("tip_battery", p=battery_percent(s.get("battery", 0)))
+            if s.get("mic_muted"):
+                tip += " — " + t("info_mic").lower()
+        elif s.get("connected"):
+            tip += " — " + t("headset_off").lower()
+        else:
+            tip += " — " + t("base_missing").lower()
+        self.tray.setToolTip(tip)
 
     def _on_sys_event(self, ev):
         # appele hors du thread Qt : veille et extinction doivent eteindre l'ecran tout de suite
@@ -414,10 +431,10 @@ class NovaPanel:
         elif ev == "hotkey:anc_cycle":
             nxt = (self.state.get("anc", 0) + 1) % 3
             self.send("anc", nxt)
-            self.show_osd(ANC_NAMES[nxt], ANC_COLORS[nxt])
+            self.show_osd(t("anc_names")[nxt], ANC_COLORS[nxt])
         elif ev == "hotkey:screen_black":
             self.force_black(not self.comp.forced_black)
-            self.show_osd("Écran de la base éteint" if self.comp.forced_black else "Écran de la base rallumé")
+            self.show_osd(t("base_screen_off") if self.comp.forced_black else t("base_screen_on"))
         elif ev == "hotkey:screen_page":
             if self.cfg["screen_mode"] != "custom":
                 self.set_cfg("screen_mode", "custom")
@@ -425,21 +442,21 @@ class NovaPanel:
             else:
                 page = PAGES[(PAGES.index(self.cfg["screen_page"]) + 1) % len(PAGES)]
                 self.set_cfg("screen_page", page)
-            self.show_osd(f"Écran : {PAGE_NAMES[page]}")
+            self.show_osd(t("osd_page", page=t("page_" + page)))
         elif ev.startswith("hotkey_failed:"):
-            self.api.notify.emit(f"Raccourci déjà utilisé par une autre application : {ev.split(':', 1)[1]}")
+            self.api.notify.emit(t("hk_failed", k=ev.split(":", 1)[1]))
 
     def gg_status(self):
         if not gg:
             return None
         running, auto = gg.running(), gg.autostart_enabled()
         if running:
-            status = "GG est lancé. NovaPanel fonctionne sans lui, vous pouvez l'arrêter."
+            status = t("gg_running")
         elif auto:
-            status = "GG est arrêté mais se relancera au prochain démarrage de Windows."
+            status = t("gg_auto")
         else:
-            status = "GG est arrêté et ne démarre plus avec Windows."
-        button = "Arrêter GG et l'empêcher de démarrer" if (running or auto) else "Réactiver GG (mises à jour du firmware)"
+            status = t("gg_off")
+        button = t("gg_stop") if (running or auto) else t("gg_enable")
         return {"running": running, "autostart": auto, "status": status, "button": button}
 
     def toggle_gg(self):
@@ -449,11 +466,11 @@ class NovaPanel:
             if st["autostart"]:
                 gg.set_autostart(False)
             QTimer.singleShot(1500, lambda: (self.io.submit(self.base.hardware_volume_mode), self.comp.reset()))
-            msg = "GG arrêté"
+            msg = t("gg_stopped")
         else:
             gg.set_autostart(True)
             gg.start()
-            msg = "GG relancé"
+            msg = t("gg_started")
         return {**self.gg_status(), "message": msg}
 
     def quit(self):
@@ -475,6 +492,7 @@ def main():
     qapp.setApplicationName("NovaPanel")
     qapp.setApplicationVersion(__version__)
     qapp.setWindowIcon(QIcon(str(ICON)))
+    i18n.set_language(config.load()["language"])
 
     # une seule instance : la deuxieme demande a la premiere d'ouvrir sa fenetre
     probe = QLocalSocket()
@@ -488,7 +506,7 @@ def main():
     server.listen("NovaPanel")
 
     if not QSystemTrayIcon.isSystemTrayAvailable():
-        QMessageBox.critical(None, "NovaPanel", "Zone de notification indisponible.")
+        QMessageBox.critical(None, "NovaPanel", t("no_tray"))
         return
     panel = NovaPanel(qapp, show_window="--tray" not in sys.argv)
     server.newConnection.connect(lambda: (server.nextPendingConnection(), panel.show_window()))

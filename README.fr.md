@@ -16,11 +16,13 @@ Réduction de bruit, égaliseur, écran OLED de la base et batteries, sans GG en
 ![Windows | macOS | Linux](https://img.shields.io/badge/syst%C3%A8me-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
 [![Soutenir](https://img.shields.io/badge/soutenir-%E2%9D%A4-db61a2?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/thibautgnt)
 
-<img src="docs/screenshot.png" width="860" alt="Fenêtre principale de NovaPanel">
+<img src="docs/fr/screenshot.png" width="860" alt="Fenêtre principale de NovaPanel">
 
 </div>
 
 ## Pourquoi
+
+Tout est parti d'un petit agacement : la base reste alimentée en USB quand l'ordinateur est éteint, et son écran restait allumé toute la nuit. NovaPanel a d'abord été écrit pour éteindre cet écran le soir, quand l'ordinateur se met en veille ou s'éteint. Il est ensuite devenu un remplaçant complet de GG.
 
 SteelSeries GG est une application lourde, avec plusieurs services en arrière-plan, juste pour changer quelques réglages qui sont de toute façon enregistrés dans la base. NovaPanel parle directement à la base en USB et fait le même travail dans une petite application qui reste dans la zone de notification.
 
@@ -40,12 +42,13 @@ SteelSeries GG est une application lourde, avec plusieurs services en arrière-p
 - **Base** : luminosité et assombrissement de l'écran, sortie ligne, mode sans fil, Bluetooth.
 - **Batteries** : icône dans la zone de notification avec le niveau du casque, alerte de batterie faible, notification quand la batterie de rechange est pleine.
 - **Automatisations** : égaliseur par application (bascule quand un jeu passe au premier plan), raccourcis globaux (`Ctrl+Alt+N` mode de réduction de bruit, `Ctrl+Alt+B` écran noir, `Ctrl+Alt+P` écran suivant).
+- Interface **en français et en anglais**, selon la langue du système.
 - **Interrupteur GG** : arrête GG et l'empêche de démarrer avec Windows, ou le relance pour les mises à jour du firmware.
 
 <table>
 <tr>
-<td><img src="docs/screenshot-eq.png" alt="Égaliseur"></td>
-<td><img src="docs/screenshot-screen.png" alt="Réglages de l'écran de la base"></td>
+<td><img src="docs/fr/screenshot-eq.png" alt="Égaliseur"></td>
+<td><img src="docs/fr/screenshot-screen.png" alt="Réglages de l'écran de la base"></td>
 </tr>
 </table>
 
@@ -53,16 +56,16 @@ SteelSeries GG est une application lourde, avec plusieurs services en arrière-p
 
 ### Windows
 
-1. Téléchargez **NovaPanel-Windows.zip** depuis la [dernière version](https://github.com/thibautgnt/NovaPanel/releases/latest).
-2. Décompressez-le où vous voulez (par exemple `C:\Program Files\NovaPanel` ou vos Documents) et lancez `NovaPanel.exe`.
-3. Dans **Réglages**, activez *Lancer NovaPanel au démarrage* et, si vous le souhaitez, arrêtez GG.
+1. Téléchargez **[NovaPanel-Setup.exe](https://github.com/thibautgnt/NovaPanel/releases/latest/download/NovaPanel-Setup.exe)** et lancez-le. Pas besoin des droits administrateur.
+2. Dans **Réglages**, activez *Lancer NovaPanel au démarrage* et, si vous le souhaitez, arrêtez GG.
 
-L'application n'est pas encore signée : au premier lancement, Windows SmartScreen peut demander une confirmation (*Informations complémentaires → Exécuter quand même*).
+L'installateur n'est pas encore signé : Windows SmartScreen peut demander une confirmation (*Informations complémentaires → Exécuter quand même*). Une version portable en zip est aussi disponible dans la [version](https://github.com/thibautgnt/NovaPanel/releases/latest).
 
 ### macOS
 
-1. Téléchargez **NovaPanel-macOS.zip** depuis la [dernière version](https://github.com/thibautgnt/NovaPanel/releases/latest) et placez `NovaPanel.app` dans *Applications*.
-2. L'application n'est pas notarisée : la première fois, faites un clic droit puis *Ouvrir*, ou lancez `xattr -dr com.apple.quarantine /Applications/NovaPanel.app`.
+Téléchargez **[NovaPanel.dmg](https://github.com/thibautgnt/NovaPanel/releases/latest/download/NovaPanel.dmg)**, ouvrez-le et glissez NovaPanel dans *Applications*.
+
+L'application n'est pas encore notarisée : la première fois, macOS refuse de l'ouvrir. Allez dans *Réglages Système → Confidentialité et sécurité* et cliquez sur *Ouvrir quand même*.
 
 ### Linux
 
@@ -122,9 +125,10 @@ Les mises à jour du firmware passent encore par GG. Utilisez *Réactiver GG* da
 pip install -e .[dev]
 pytest
 python packaging/build.py   # dist/NovaPanel (Windows) ou dist/NovaPanel.app (macOS)
+packaging/macos/make_dmg.sh # macOS : dist/NovaPanel.dmg
 ```
 
-Pousser un tag `v*` compile les deux paquets sur GitHub Actions et les joint à la version.
+L'installateur Windows est construit avec [Inno Setup](https://jrsoftware.org/isinfo.php) à partir de `packaging/windows/novapanel.iss`. Pousser un tag `v*` compile les deux paquets sur GitHub Actions et les joint à la version.
 
 ## Remerciements
 

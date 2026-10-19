@@ -34,6 +34,7 @@ DEFAULTS = {
                 "screen_page": "Ctrl+Alt+P"},
     # egaliseur automatique : [{"exe": "valorant.exe", "eq": "base:2" | "user:<nom>"}]
     "eq_rules": [],
+    "language": "auto",         # auto | en | fr
 }
 
 

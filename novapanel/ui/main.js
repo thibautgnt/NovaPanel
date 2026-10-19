@@ -7,6 +7,10 @@ let api = null;
 let state = {};
 let cfg = {};
 let meta = {};
+let S = {};
+let forced = false;
+let lastInfo = '';
+const t = (k, v = {}) => (S[k] ?? k).replace(/\{(\w+)\}/g, (_, n) => v[n]);
 const pct = lvl => Math.round((lvl || 0) * 100 / 8);
 
 function openTab(name) {
@@ -72,7 +76,7 @@ function setCfg(key, value) {
 }
 
 function renderIdle(v) {
-  $('#idle-out').value = v === 0 ? 'jamais' : `${v} min`;
+  $('#idle-out').value = v === 0 ? t('idle_never') : `${v} min`;
 }
 
 function setTile(id, { value, unit = true, fill = 0, badge = '', cls = {} }) {
@@ -90,29 +94,29 @@ function render() {
   const conn = $('#conn');
   const online = s.headset === 'online' || s.headset === 'charging';
   conn.className = 'chip ' + (s.connected ? 'ok' : 'off');
-  $('.label', conn).textContent = !s.connected ? 'Base non détectée'
-    : s.headset === 'charging' ? 'Casque en charge'
-    : online ? 'Casque connecté' : 'Casque éteint';
+  $('.label', conn).textContent = t(!s.connected ? 'base_missing'
+    : s.headset === 'charging' ? 'headset_charging'
+    : online ? 'headset_on' : 'headset_off');
 
   const hsOn = !!(s.connected && online);
   setTile('#t-headset', {
     value: hsOn ? pct(s.battery) : '—', unit: hsOn, fill: hsOn ? pct(s.battery) : 0,
-    badge: s.headset === 'charging' ? 'en charge' : hsOn ? '' : 'éteint',
+    badge: s.headset === 'charging' ? t('charging') : hsOn ? '' : t('off'),
     cls: { low: hsOn && s.battery <= 2, charging: s.headset === 'charging', dim: !hsOn },
   });
   setTile('#t-spare', {
     value: s.connected ? pct(s.spare_battery) : '—', unit: !!s.connected, fill: s.connected ? pct(s.spare_battery) : 0,
-    badge: s.connected && s.spare_battery === 8 ? 'pleine' : s.connected ? 'en charge' : '',
+    badge: s.connected && s.spare_battery === 8 ? t('full') : s.connected ? t('charging') : '',
     cls: { low: s.connected && s.spare_battery <= 2, dim: !s.connected },
   });
   setTile('#t-vol', {
     value: s.volume ?? '—', unit: s.volume != null, fill: s.volume ?? 0,
-    badge: 'molette', cls: { dim: !s.connected },
+    badge: t('dial'), cls: { dim: !s.connected },
   });
   setTile('#t-mic', {
-    value: !hsOn ? '—' : s.mic_muted ? 'Coupé' : 'Actif', unit: false,
+    value: !hsOn ? '—' : s.mic_muted ? t('muted') : t('active'), unit: false,
     fill: hsOn && !s.mic_muted ? (s.mic_volume ?? 0) * 10 : 0,
-    badge: hsOn ? `volume ${s.mic_volume ?? '—'}/10` : '',
+    badge: hsOn ? t('mic_badge', { v: s.mic_volume ?? '—' }) : '',
     cls: { muted: hsOn && s.mic_muted, dim: !hsOn },
   });
   if (s.volume != null) view.setVolume(s.volume);
@@ -132,8 +136,8 @@ function render() {
     }
   });
   $('[data-set="transparency"]').disabled = s.anc !== 1;
-  $('#transp-note').textContent = s.anc === 1 ? 'Mode Transparence actif.' : 'S\'applique en mode Transparence.';
-  $('#bt-status').textContent = s.bt_connected ? 'Connecté' : 'Non connecté';
+  $('#transp-note').textContent = t(s.anc === 1 ? 'transp_active' : 'transp_note');
+  $('#bt-status').textContent = t(s.bt_connected ? 'connected' : 'not_connected');
 
   if (s.eq && !eqDrag) { eqGains = s.eq.slice(); drawEq(); }
   renderEqChips();
@@ -154,6 +158,7 @@ function renderConfig() {
     }
   });
   renderIdle(cfg.idle_minutes);
+  $('#language').value = cfg.language;
   $('#page-pick').style.display = cfg.screen_mode === 'custom' ? '' : 'none';
   $$('input.hotkey').forEach(el => { if (document.activeElement !== el) el.value = (cfg.hotkeys || {})[el.dataset.hk] || '—'; });
   renderEqChips();
@@ -162,7 +167,7 @@ function renderConfig() {
 
 const FREQS = [32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
 const FLAB = ['32', '64', '125', '250', '500', '1k', '2k', '4k', '8k', '16k'];
-const BASE_PRESETS = ['Flat', 'Bass Boost', 'Focus', 'Smiley', 'Perso'];
+const BASE_PRESETS = ['Flat', 'Bass Boost', 'Focus', 'Smiley'];
 const EQ = { x0: 26, x1: 386, y0: 16, y1: 196 };
 let eqGains = new Array(10).fill(0);
 let eqDrag = null;
@@ -243,7 +248,7 @@ function sendEq() {
     const presets = { ...(cfg.eq_presets || {}), [name]: eqGains.slice() };
     setCfg('eq_presets', presets);
     $('#eq-name').value = '';
-    toast(`Courbe « ${name} » enregistrée`);
+    toast(t('curve_saved', { name }));
   });
 })();
 
@@ -252,7 +257,7 @@ function sameCurve(a, b) { return a && b && a.every((v, i) => Math.abs(v - b[i])
 function renderEqChips() {
   const base = $('#eq-base');
   base.innerHTML = '';
-  BASE_PRESETS.forEach((n, i) => {
+  [...BASE_PRESETS, t('custom')].forEach((n, i) => {
     const b = document.createElement('button');
     b.textContent = n;
     b.classList.toggle('on', state.eq_preset === i);
@@ -263,10 +268,10 @@ function renderEqChips() {
   user.innerHTML = '';
   const presets = cfg.eq_presets || {};
   const names = Object.keys(presets).sort();
-  if (!names.length) user.innerHTML = '<span class="empty">Aucune pour l\'instant.</span>';
+  if (!names.length) user.innerHTML = `<span class="empty">${t('eq_none')}</span>`;
   names.forEach(n => {
     const b = document.createElement('button');
-    b.innerHTML = `<span></span><span class="x" title="Supprimer">×</span>`;
+    b.innerHTML = `<span></span><span class="x" title="${t('delete')}">×</span>`;
     b.firstChild.textContent = n;
     b.classList.toggle('on', state.eq_preset === 4 && sameCurve(presets[n], eqGains));
     b.onclick = e => {
@@ -283,10 +288,11 @@ function renderEqChips() {
 $('#force-black').addEventListener('click', () => api.toggleBlack());
 $('#hero-black').addEventListener('click', () => api.toggleBlack());
 function renderForced(on) {
+  forced = on;
   const b = $('#force-black');
   b.classList.toggle('on', on);
-  b.textContent = on ? 'Rallumer l\'écran' : 'Éteindre l\'écran maintenant';
-  $('#hero-black').textContent = on ? 'Rallumer l\'écran' : 'Éteindre l\'écran';
+  b.textContent = t(on ? 'screen_on' : 'screen_off_now');
+  $('#hero-black').textContent = t(on ? 'screen_on' : 'screen_off');
   $('#hero-black').classList.toggle('on', on);
 }
 
@@ -307,7 +313,6 @@ const layer = document.createElement('canvas');
 layer.width = 1024; layer.height = 512;
 const lctx = layer.getContext('2d');
 const view = createBaseView($('#view'), oled);
-const INFO = { origin: 'Affichage SteelSeries (aperçu approximatif)', black: 'Écran éteint', toast: 'Annonce', mic: 'Micro coupé', custom: 'Affichage NovaPanel' };
 function onFrame(b64, info) {
   const bin = atob(b64);
   lctx.clearRect(0, 0, 1024, 512);
@@ -327,13 +332,14 @@ function onFrame(b64, info) {
   octx.globalCompositeOperation = 'source-over';
   octx.drawImage(layer, 0, 0);
   view.update();
-  $('#hero-info').textContent = INFO[info] || '';
+  lastInfo = info;
+  $('#hero-info').textContent = info ? t('info_' + info) : '';
 }
 
 function eqTargets() {
-  const t = BASE_PRESETS.slice(0, 4).map((n, i) => [`base:${i}`, `Base · ${n}`]);
-  Object.keys(cfg.eq_presets || {}).sort().forEach(n => t.push([`user:${n}`, n]));
-  return t;
+  const targets = BASE_PRESETS.map((n, i) => [`base:${i}`, `Base · ${n}`]);
+  Object.keys(cfg.eq_presets || {}).sort().forEach(n => targets.push([`user:${n}`, n]));
+  return targets;
 }
 function targetLabel(v) { return (eqTargets().find(t => t[0] === v) || [v, v])[1]; }
 
@@ -343,13 +349,13 @@ function renderRules() {
   (cfg.eq_rules || []).forEach((r, i) => {
     const row = document.createElement('div');
     row.className = 'rule';
-    row.innerHTML = `<span class="exe"></span><span class="arrow">→</span><span class="tgt"></span><button class="del" title="Supprimer">×</button>`;
+    row.innerHTML = `<span class="exe"></span><span class="arrow">→</span><span class="tgt"></span><button class="del" title="${t('delete')}">×</button>`;
     $('.exe', row).textContent = r.exe;
     $('.tgt', row).textContent = targetLabel(r.eq);
     $('.del', row).onclick = () => setCfg('eq_rules', cfg.eq_rules.filter((_, j) => j !== i));
     box.appendChild(row);
   });
-  if (!(cfg.eq_rules || []).length) box.innerHTML = '<p class="note">Aucune règle.</p>';
+  if (!(cfg.eq_rules || []).length) box.innerHTML = `<p class="note">${t('rules_none')}</p>`;
   const sel = $('#rule-eq');
   const cur = sel.value;
   sel.innerHTML = eqTargets().map(([v, l]) => `<option value="${v}">${l}</option>`).join('');
@@ -372,7 +378,7 @@ $('#rule-add').addEventListener('click', () => {
 
 // raccourcis : capture de la combinaison
 $$('input.hotkey').forEach(el => {
-  el.addEventListener('focus', () => { el.value = 'Appuyez sur les touches…'; });
+  el.addEventListener('focus', () => { el.value = t('hk_press'); });
   el.addEventListener('blur', () => renderConfig());
   el.addEventListener('keydown', e => {
     e.preventDefault();
@@ -386,7 +392,7 @@ $$('input.hotkey').forEach(el => {
     if (e.ctrlKey) parts.push('Ctrl');
     if (e.altKey) parts.push('Alt');
     if (e.shiftKey) parts.push('Shift');
-    if (!parts.length && !/^F\d+$/.test(key)) { el.value = 'Ajoutez Ctrl, Alt ou Shift'; return; }
+    if (!parts.length && !/^F\d+$/.test(key)) { el.value = t('hk_mod'); return; }
     hk[el.dataset.hk] = [...parts, key].join('+');
     setCfg('hotkeys', hk);
     el.blur();
@@ -394,6 +400,25 @@ $$('input.hotkey').forEach(el => {
 });
 
 $('#autostart').addEventListener('change', e => api.setAutostart(e.target.checked));
+$('#language').addEventListener('change', async e => {
+  setCfg('language', e.target.value);
+  meta = JSON.parse(await api.getMeta());
+  await loadStrings();
+});
+
+async function loadStrings() {
+  S = JSON.parse(await api.getStrings());
+  document.documentElement.lang = S.lang;
+  $$('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+  $$('[data-i18n-title]').forEach(el => { el.title = t(el.dataset.i18nTitle); });
+  $$('[data-i18n-placeholder]').forEach(el => { el.placeholder = t(el.dataset.i18nPlaceholder); });
+  if (meta.gg) renderGG(meta.gg);
+  $('#fw').textContent = meta.firmware ? t('firmware', { v: meta.firmware }) : '';
+  $('#hero-info').textContent = lastInfo ? t('info_' + lastInfo) : t('screen_title');
+  renderForced(forced);
+  renderConfig();
+  render();
+}
 $('#gg-toggle').addEventListener('click', async () => {
   const res = JSON.parse(await api.toggleGG());
   renderGG(res);
@@ -426,11 +451,8 @@ new QWebChannel(qt.webChannelTransport, async channel => {
   $('#gg-card').hidden = !meta.gg;
   $('#page-music').hidden = !meta.media;
   $('#rules').closest('.card').hidden = meta.platform === 'linux';
-  if (meta.gg) renderGG(meta.gg);
-  $('#fw').textContent = meta.firmware ? `Firmware de la base : ${meta.firmware}` : '';
-  renderForced(meta.forced_black);
-  renderConfig();
-  render();
+    forced = meta.forced_black;
+  await loadStrings();
   refreshApps();
 
   api.stateChanged.connect(json => { state = JSON.parse(json); render(); });

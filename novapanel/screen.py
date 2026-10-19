@@ -15,16 +15,12 @@ from pathlib import Path
 import psutil
 from PIL import Image, ImageDraw, ImageFont
 
-from . import oled
+from . import i18n, oled
 from .device import battery_percent
 from .system import idle_seconds
 
 W, H = 128, 64
 FONTS = Path(__file__).resolve().parent / "fonts"
-DAYS = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
-MONTHS = ["janv.", "févr.", "mars", "avril", "mai", "juin", "juil.", "août", "sept.",
-          "oct.", "nov.", "déc."]
-ANC_LABELS = ["ANC DÉSACTIVÉ", "TRANSPARENCE", "RÉDUCTION DE BRUIT"]
 
 
 def _font(weight, size):
@@ -91,7 +87,9 @@ def page_clock(state, shift=(0, 0)):
     sx, sy = shift
     now = datetime.now()
     _center(d, -1 + sy, now.strftime("%H:%M"), F_BIG)
-    _center(d, 34 + sy, f"{DAYS[now.weekday()]} {now.day} {MONTHS[now.month - 1]}", F_TINY)
+    days, months = i18n.t("oled_days"), i18n.t("oled_months")
+    date = i18n.t("oled_date", day=days[now.weekday()], d=now.day, month=months[now.month - 1])
+    _center(d, 34 + sy, date, F_TINY)
     _status_row(d, state, 51 + sy, sx)
     return img
 
@@ -139,9 +137,9 @@ def _status_row(d, state, y, sx=0):
         icon_battery(d, 18 + sx, y + 2, state.get("battery", 0))
         d.text((42 + sx, y - 1), f"{battery_percent(state.get('battery', 0))}%", font=F_TINY, fill=1)
     else:
-        d.text((18 + sx, y - 1), "éteint", font=F_TINY, fill=1)
+        d.text((18 + sx, y - 1), i18n.t("oled_off"), font=F_TINY, fill=1)
     icon_battery(d, 72 + sx, y + 2, state.get("spare_battery", 0), w=16)
-    d.text((90 + sx, y - 1), "R", font=F_TINY, fill=1)
+    d.text((90 + sx, y - 1), i18n.t("oled_spare"), font=F_TINY, fill=1)
     icon_anc(d, 116 + sx, y + 1, state.get("anc", 0))
 
 
@@ -160,8 +158,9 @@ def _marquee(d, text, font, y, t):
 def overlay_mic_muted(state, t):
     img, d = _canvas()
     icon_mic(d, 10, 4, scale=2, crossed=True)
-    d.text((48, 6), "MICRO", font=F_MED, fill=1)
-    d.text((48, 23), "COUPÉ", font=F_MED, fill=1)
+    top, bottom = i18n.t("oled_mic")
+    d.text((48, 6), top, font=F_MED, fill=1)
+    d.text((48, 23), bottom, font=F_MED, fill=1)
     _status_row(d, state, 52)
     return img
 
@@ -175,7 +174,7 @@ def overlay_anc(mode):
         d.arc((44, -4, 84, 36), 300, 60, fill=1, width=2)
         d.arc((44, -4, 84, 36), 120, 240, fill=1, width=2)
         d.ellipse((61, 13, 67, 19), fill=1)
-    _center(d, 36, ANC_LABELS[mode] if mode < 3 else "", F_SMALL)
+    _center(d, 36, i18n.t("oled_anc")[mode] if mode < 3 else "", F_SMALL)
     return img
 
 
