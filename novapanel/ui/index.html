@@ -12,6 +12,7 @@
   <div class="brand"><img src="../assets/icon.png" alt="">NovaPanel<span class="sub">Arctis Nova Pro Wireless</span></div>
   <div id="conn" class="chip"><span class="dot"></span><span class="label" data-i18n="connecting"></span></div>
   <div class="winbtns">
+    <button id="btn-about" data-i18n-title="about"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></svg><i class="dot" hidden></i></button>
     <button id="btn-min" data-i18n-title="min"><svg viewBox="0 0 12 12"><path d="M2 6h8"/></svg></button>
     <button id="btn-close" data-i18n-title="close"><svg viewBox="0 0 12 12"><path d="M3 3l6 6M9 3l-6 6"/></svg></button>
   </div>
@@ -210,17 +211,28 @@
           <p class="note" id="gg-status">—</p>
           <button class="wide" id="gg-toggle">—</button>
         </div>
-        <div class="card about">
-          <div><b>NovaPanel</b> <span class="muted" id="version"></span></div>
-          <a id="update" class="update" hidden></a>
-          <div class="note" data-i18n="credits"></div>
-          <div class="note" id="fw"></div>
-          <div class="row"><a href="https://github.com/thibautgnt/NovaPanel">GitHub</a><a href="https://github.com/sponsors/thibautgnt" data-i18n="sponsor"></a></div>
-        </div>
       </div>
     </div>
   </aside>
 </main>
+<div id="about" hidden>
+  <div class="about-box" role="dialog" aria-modal="true" aria-labelledby="about-title">
+    <button class="about-x" id="about-close" data-i18n-title="close_about"><svg viewBox="0 0 12 12"><path d="M3 3l6 6M9 3l-6 6"/></svg></button>
+    <img src="../assets/icon.png" alt="">
+    <h3 id="about-title">NovaPanel <span class="muted" id="version"></span></h3>
+    <p class="muted" data-i18n="tagline"></p>
+    <a id="update" class="update" hidden></a>
+    <p data-i18n="made_by"></p>
+    <div class="about-links">
+      <a href="https://github.com/sponsors/thibautgnt" class="sponsor" data-i18n="sponsor"></a>
+      <a href="https://github.com/thibautgnt/NovaPanel">GitHub</a>
+      <a href="https://github.com/thibautgnt/NovaPanel/issues/new/choose" data-i18n="report_bug"></a>
+    </div>
+    <p class="note" data-i18n="credits"></p>
+    <p class="note" id="fw"></p>
+    <p class="note" data-i18n="license_note"></p>
+  </div>
+</div>
 <div id="toast"></div>
 <script type="module" src="main.js"></script>
 </body>

@@ -430,6 +430,7 @@ function showUpdate(u) {
   update = u || update;
   const a = $('#update');
   a.hidden = !update;
+  $('#btn-about .dot').hidden = !update;
   if (update) { a.href = update[1]; a.textContent = t('update_link', { version: update[0] }); }
 }
 
@@ -440,6 +441,11 @@ function renderGG(g) {
 
 $('#titlebar').addEventListener('mousedown', e => { if (!e.target.closest('button') && e.button === 0) api.startDrag(); });
 $('#titlebar').addEventListener('dblclick', e => e.preventDefault());
+const about = on => { $('#about').hidden = !on; };
+$('#btn-about').addEventListener('click', () => about(true));
+$('#about-close').addEventListener('click', () => about(false));
+$('#about').addEventListener('click', e => { if (e.target.id === 'about') about(false); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') about(false); });
 $('#btn-min').addEventListener('click', () => api.minimize());
 $('#btn-close').addEventListener('click', () => api.hide());
 document.addEventListener('click', e => {

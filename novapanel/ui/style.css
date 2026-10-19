@@ -151,9 +151,25 @@ button.wide.on { border-color: rgba(248, 81, 73, .55); color: var(--danger); }
 .rule .del:hover { color: var(--danger); }
 #rule-app, #rule-eq { width: 0; flex: 1; }
 
-.about { font-size: 12px; }
-.about a { color: var(--accent); text-decoration: none; }
-.about a.update { display: block; padding: 8px 10px; border-radius: 7px; background: var(--accent-soft); font-weight: 600; }
+#btn-about { position: relative; }
+#btn-about svg { width: 16px; height: 16px; stroke-width: 1.6; }
+#btn-about .dot { position: absolute; top: 7px; right: 12px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+#about { position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; background: rgba(0, 0, 0, .55); }
+.about-box { position: relative; width: 360px; padding: 26px 26px 20px; border-radius: 14px; background: var(--panel); border: 1px solid var(--line);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .5); text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.about-box img { width: 64px; height: 64px; }
+.about-box h3 { margin: 4px 0 0; font-size: 18px; font-weight: 600; }
+.about-box h3 .muted { font-weight: 400; font-size: 14px; }
+.about-box p { margin: 0; }
+.about-box a { color: var(--accent); text-decoration: none; }
+.about-box a.update { display: block; width: 100%; padding: 8px 10px; border-radius: 7px; background: var(--accent-soft); font-weight: 600; }
+.about-links { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin: 6px 0; }
+.about-links a { padding: 6px 12px; border-radius: 7px; border: 1px solid var(--line); color: var(--text); }
+.about-links a:hover { background: var(--panel-hi); }
+.about-links a.sponsor { border-color: rgba(219, 97, 162, .5); color: #f08cc0; }
+.about-x { position: absolute; top: 10px; right: 10px; width: 28px; height: 28px; border: 0; border-radius: 6px; background: none; color: var(--muted); display: grid; place-items: center; }
+.about-x:hover { background: var(--panel-hi); color: var(--text); }
+.about-x svg { width: 11px; height: 11px; stroke-width: 1.5; }
 
 #toast { position: fixed; left: 50%; bottom: 20px; transform: translate(-50%, 12px); opacity: 0; pointer-events: none;
   background: var(--panel-hi); border: 1px solid var(--line); padding: 8px 14px; border-radius: 8px; transition: opacity .2s, transform .2s; box-shadow: 0 8px 24px rgba(0, 0, 0, .4); }
