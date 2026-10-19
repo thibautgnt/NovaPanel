@@ -20,6 +20,8 @@ English · [Français](README.fr.md)
 
 <img src="docs/screenshot.png" width="860" alt="NovaPanel main window">
 
+**[Try the live demo](https://thibautgnt.github.io/NovaPanel/)** in your browser, no headset needed.
+
 </div>
 
 ## Why

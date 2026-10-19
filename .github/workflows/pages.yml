@@ -1,0 +1,35 @@
+name: Pages
+
+on:
+  push:
+    branches: [main]
+    paths: ["docs/**", "novapanel/**", ".github/workflows/pages.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+      - name: Site and live demo
+        run: |
+          cp -r docs _site
+          cp -r novapanel/ui/. _site/demo/
+          cp -r novapanel/assets _site/assets
+          sed -i 's#qrc:///qtwebchannel/qwebchannel.js#bridge.js#' _site/demo/index.html
+          zip -qr _site/demo/novapanel.zip novapanel -x 'novapanel/ui/*' 'novapanel/assets/*' '*/__pycache__/*'
+      - uses: actions/upload-pages-artifact@v4
+      - uses: actions/deploy-pages@v4
+        id: deploy

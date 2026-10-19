@@ -6,6 +6,7 @@ All notable changes to NovaPanel. The format follows [Keep a Changelog](https://
 
 ### Added
 - Release notes on the website, taken from this changelog.
+- Live demo on the website: the real interface and screen rendering, with a simulated base station.
 
 ### Fixed
 - App and curve names in the automation lists, and the equalizer graph, are no longer built as HTML.
