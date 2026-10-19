@@ -12,6 +12,8 @@ Réduction de bruit, égaliseur, écran OLED de la base et batteries, sans GG en
 [![Version](https://img.shields.io/github/v/release/thibautgnt/NovaPanel?label=version&color=5b8def)](https://github.com/thibautgnt/NovaPanel/releases/latest)
 [![Téléchargements](https://img.shields.io/github/downloads/thibautgnt/NovaPanel/total?label=t%C3%A9l%C3%A9chargements&color=5b8def)](https://github.com/thibautgnt/NovaPanel/releases)
 [![CI](https://github.com/thibautgnt/NovaPanel/actions/workflows/ci.yml/badge.svg)](https://github.com/thibautgnt/NovaPanel/actions/workflows/ci.yml)
+[![Notarized](https://img.shields.io/badge/macOS-notarized-success?logo=apple)](SECURITY.md)
+[![Security policy](https://img.shields.io/badge/security-policy-success)](SECURITY.md)
 [![Licence : MIT](https://img.shields.io/github/license/thibautgnt/NovaPanel?label=licence&color=5b8def)](LICENSE)
 ![Windows | macOS | Linux](https://img.shields.io/badge/syst%C3%A8me-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
 [![Soutenir](https://img.shields.io/badge/soutenir-%E2%9D%A4-db61a2?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/thibautgnt)
@@ -153,6 +155,10 @@ Police de l'écran de la base : [Barlow](https://github.com/jpt/barlow) (SIL Ope
 ## Soutenir le projet
 
 NovaPanel est gratuit et open source. S'il vous évite de faire tourner GG, vous pouvez [soutenir le projet sur GitHub](https://github.com/sponsors/thibautgnt).
+
+## Contribuer
+
+Voir [CONTRIBUTING.md](CONTRIBUTING.md) (en anglais) et le [journal des versions](CHANGELOG.md).
 
 ## Licence
 
