@@ -18,8 +18,8 @@ tiffutil -cathidpicheck packaging/macos/dmg-background.png packaging/macos/dmg-b
   -out build/dmg-background.tiff
 rm -f "$DMG"
 create-dmg --volname NovaPanel --volicon packaging/icon.icns \
-  --background build/dmg-background.tiff --window-size 660 400 --icon-size 112 \
-  --icon NovaPanel.app 170 180 --app-drop-link 490 180 --hide-extension NovaPanel.app \
+  --background build/dmg-background.tiff --window-size 660 448 --icon-size 112 \
+  --icon NovaPanel.app 170 211 --app-drop-link 490 211 --hide-extension NovaPanel.app \
   --no-internet-enable "$DMG" "$APP"
 
 if [ -n "${MACOS_SIGN_IDENTITY:-}" ]; then
