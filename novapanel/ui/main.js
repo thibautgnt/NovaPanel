@@ -186,24 +186,29 @@ function smoothPath(pts) {
   return d;
 }
 
+function svgEl(tag, attrs, text) {
+  const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+  if (text !== undefined) el.textContent = text;
+  return el;
+}
+
 function drawEq() {
-  const svg = $('#eq');
   eqGains = eqGains.map(Number);
-  const pts = eqGains.map((g, i) => [ex(i), ey(g)]);
-  const curve = smoothPath(pts);
-  let h = '';
-  for (const g of [-10, -5, 5, 10]) h += `<line class="grid" x1="${EQ.x0}" x2="${EQ.x1}" y1="${ey(g)}" y2="${ey(g)}"/>`;
-  for (let i = 0; i < 10; i++) h += `<line class="grid" x1="${ex(i)}" x2="${ex(i)}" y1="${EQ.y0}" y2="${EQ.y1}"/>`;
-  h += `<line class="zero" x1="${EQ.x0}" x2="${EQ.x1}" y1="${ey(0)}" y2="${ey(0)}"/>`;
-  h += `<text x="10" y="${ey(10) + 4}">+10</text><text x="10" y="${ey(0) + 4}">0</text><text x="10" y="${ey(-10) + 4}">−10</text>`;
-  h += `<path class="area" d="${curve} L${EQ.x1},${EQ.y1} L${EQ.x0},${EQ.y1} Z"/>`;
-  h += `<path class="curve" d="${curve}"/>`;
+  const curve = smoothPath(eqGains.map((g, i) => [ex(i), ey(g)]));
+  const els = [];
+  for (const g of [-10, -5, 5, 10]) els.push(svgEl('line', { class: 'grid', x1: EQ.x0, x2: EQ.x1, y1: ey(g), y2: ey(g) }));
+  for (let i = 0; i < 10; i++) els.push(svgEl('line', { class: 'grid', x1: ex(i), x2: ex(i), y1: EQ.y0, y2: EQ.y1 }));
+  els.push(svgEl('line', { class: 'zero', x1: EQ.x0, x2: EQ.x1, y1: ey(0), y2: ey(0) }));
+  for (const [g, label] of [[10, '+10'], [0, '0'], [-10, '−10']]) els.push(svgEl('text', { x: 10, y: ey(g) + 4 }, label));
+  els.push(svgEl('path', { class: 'area', d: `${curve} L${EQ.x1},${EQ.y1} L${EQ.x0},${EQ.y1} Z` }));
+  els.push(svgEl('path', { class: 'curve', d: curve }));
   eqGains.forEach((g, i) => {
-    h += `<circle class="knob${eqDrag === i ? ' drag' : ''}" data-i="${i}" cx="${ex(i)}" cy="${ey(g)}" r="6"/>`;
-    h += `<text x="${ex(i)}" y="222">${FLAB[i]}</text>`;
-    if (eqDrag === i) h += `<text class="val" x="${ex(i)}" y="${ey(g) - 14}">${g > 0 ? '+' : ''}${g}</text>`;
+    els.push(svgEl('circle', { class: eqDrag === i ? 'knob drag' : 'knob', 'data-i': i, cx: ex(i), cy: ey(g), r: 6 }));
+    els.push(svgEl('text', { x: ex(i), y: 222 }, FLAB[i]));
+    if (eqDrag === i) els.push(svgEl('text', { class: 'val', x: ex(i), y: ey(g) - 14 }, `${g > 0 ? '+' : ''}${g}`));
   });
-  svg.innerHTML = h;
+  $('#eq').replaceChildren(...els);
 }
 
 let eqSendTimer;
