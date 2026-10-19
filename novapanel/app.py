@@ -16,7 +16,7 @@ from PySide6.QtWebEngineCore import QWebEnginePage, QWebEngineSettings
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWidgets import QApplication, QMainWindow, QMenu, QMessageBox, QSystemTrayIcon
 
-from . import __version__, config, i18n, oled, system
+from . import __version__, config, updates, i18n, oled, system
 from .autoeq import AutoEq
 from .device import Base, battery_percent
 from .i18n import t
@@ -87,6 +87,7 @@ class Api(QObject):
     frame = Signal(str, str)
     forcedBlack = Signal(bool)
     notify = Signal(str)
+    updateAvailable = Signal(str)
 
     def __init__(self, app):
         super().__init__()
@@ -109,7 +110,7 @@ class Api(QObject):
         return json.dumps({"version": __version__, "platform": sys.platform,
                            "autostart": system.autostart_enabled(), "hotkeys": system.HOTKEYS,
                            "media": self.app.media.available, "gg": self.app.gg_status(),
-                           "forced_black": self.app.comp.forced_black,
+                           "forced_black": self.app.comp.forced_black, "update": self.app.update_info,
                            "firmware": self.app.base.state.get("firmware", "")})
 
     @Slot(str, int)
@@ -209,6 +210,7 @@ class Window(QMainWindow):
 class Bridge(QObject):
     """Ramene sur le thread Qt ce qui arrive des threads USB, ecran et systeme."""
     state = Signal(dict)
+    update = Signal(object)
     sysevent = Signal(str)
     frame = Signal(str, str)
 
@@ -254,6 +256,13 @@ class NovaPanel:
         self.rules_timer = QTimer(interval=1500)
         self.rules_timer.timeout.connect(self._check_rules)
         self.rules_timer.start()
+        self.update_info = None
+        self.bridge.update.connect(self._on_update)
+        self.tray.messageClicked.connect(self._open_update)
+        self.update_timer = QTimer(interval=24 * 3600 * 1000)
+        self.update_timer.timeout.connect(self._check_updates)
+        self.update_timer.start()
+        QTimer.singleShot(15000, self._check_updates)
 
         if show_window:
             self.show_window()
@@ -446,6 +455,21 @@ class NovaPanel:
         elif ev.startswith("hotkey_failed:"):
             self.api.notify.emit(t("hk_failed", k=ev.split(":", 1)[1]))
 
+    def _check_updates(self):
+        if self.cfg["check_updates"]:
+            updates.check_async(self.bridge.update.emit)
+
+    def _on_update(self, res):
+        if not res or res == self.update_info:
+            return
+        self.update_info = res
+        self.tray.showMessage(t("update_title", version=res[0]), t("update_body"), QSystemTrayIcon.Information, 10000)
+        self.api.updateAvailable.emit(json.dumps(res))
+
+    def _open_update(self):
+        if self.update_info:
+            QDesktopServices.openUrl(QUrl(self.update_info[1]))
+
     def gg_status(self):
         if not gg:
             return None
@@ -492,7 +516,12 @@ def main():
     qapp.setApplicationName("NovaPanel")
     qapp.setApplicationVersion(__version__)
     qapp.setWindowIcon(QIcon(str(ICON)))
-    i18n.set_language(config.load()["language"])
+    cfg = config.load()
+    i18n.set_language(cfg["language"])
+    if getattr(sys, "frozen", False) and not cfg["autostart_offered"]:
+        system.set_autostart(True)
+        cfg["autostart_offered"] = True
+        config.save(cfg)
 
     # une seule instance : la deuxieme demande a la premiere d'ouvrir sa fenetre
     probe = QLocalSocket()

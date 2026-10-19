@@ -198,6 +198,7 @@
         <h2 data-i18n="settings"></h2>
         <div class="card">
           <div class="toggle-row"><span data-i18n="autostart"></span><input type="checkbox" class="toggle" id="autostart"></div>
+          <div class="toggle-row"><span data-i18n="check_updates"></span><input type="checkbox" class="toggle" data-cfg="check_updates"></div>
           <div class="row"><span data-i18n="low_battery"></span>
             <select data-cfg="low_battery_level"><option value="0" data-i18n="disabled"></option><option value="1">13 %</option><option value="2">25 %</option><option value="3">38 %</option><option value="4">50 %</option></select></div>
           <div class="toggle-row"><span data-i18n="spare_full"></span><input type="checkbox" class="toggle" data-cfg="notify_spare_full"></div>
@@ -211,6 +212,7 @@
         </div>
         <div class="card about">
           <div><b>NovaPanel</b> <span class="muted" id="version"></span></div>
+          <a id="update" class="update" hidden></a>
           <div class="note" data-i18n="credits"></div>
           <div class="note" id="fw"></div>
           <div class="row"><a href="https://github.com/thibautgnt/NovaPanel">GitHub</a><a href="https://github.com/sponsors/thibautgnt" data-i18n="sponsor"></a></div>

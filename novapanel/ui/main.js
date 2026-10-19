@@ -418,12 +418,21 @@ async function loadStrings() {
   renderForced(forced);
   renderConfig();
   render();
+  showUpdate();
 }
 $('#gg-toggle').addEventListener('click', async () => {
   const res = JSON.parse(await api.toggleGG());
   renderGG(res);
   toast(res.message);
 });
+let update = null;
+function showUpdate(u) {
+  update = u || update;
+  const a = $('#update');
+  a.hidden = !update;
+  if (update) { a.href = update[1]; a.textContent = t('update_link', { version: update[0] }); }
+}
+
 function renderGG(g) {
   $('#gg-status').textContent = g.status;
   $('#gg-toggle').textContent = g.button;
@@ -447,6 +456,7 @@ new QWebChannel(qt.webChannelTransport, async channel => {
   state = JSON.parse(await api.getState());
   $('#autostart').checked = meta.autostart;
   $('#version').textContent = meta.version;
+  showUpdate(meta.update);
   $('#hk-card').hidden = !meta.hotkeys;
   $('#gg-card').hidden = !meta.gg;
   $('#page-music').hidden = !meta.media;
@@ -461,4 +471,5 @@ new QWebChannel(qt.webChannelTransport, async channel => {
   api.resendFrame();
   api.forcedBlack.connect(renderForced);
   api.notify.connect(toast);
+  api.updateAvailable.connect(json => showUpdate(JSON.parse(json)));
 });

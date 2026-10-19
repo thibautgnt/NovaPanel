@@ -13,6 +13,8 @@ else:
 FILE = DIR / "config.json"
 
 DEFAULTS = {
+    "check_updates": True,
+    "autostart_offered": False,  # lancement au demarrage active au premier lancement de l'app installee
     "idle_minutes": 5,          # 0 = jamais
     "black_on_lock": True,
     "black_on_sleep": True,
