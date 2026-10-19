@@ -188,6 +188,7 @@ function smoothPath(pts) {
 
 function drawEq() {
   const svg = $('#eq');
+  eqGains = eqGains.map(Number);
   const pts = eqGains.map((g, i) => [ex(i), ey(g)]);
   const curve = smoothPath(pts);
   let h = '';
@@ -358,13 +359,13 @@ function renderRules() {
   if (!(cfg.eq_rules || []).length) box.innerHTML = `<p class="note">${t('rules_none')}</p>`;
   const sel = $('#rule-eq');
   const cur = sel.value;
-  sel.innerHTML = eqTargets().map(([v, l]) => `<option value="${v}">${l}</option>`).join('');
+  sel.replaceChildren(...eqTargets().map(([v, l]) => new Option(l, v)));
   if (cur) sel.value = cur;
 }
 
 async function refreshApps() {
   const apps = JSON.parse(await api.runningApps());
-  $('#rule-app').innerHTML = apps.map(a => `<option>${a}</option>`).join('');
+  $('#rule-app').replaceChildren(...apps.map(a => new Option(a, a)));
 }
 $('#rule-app').addEventListener('focus', refreshApps);
 $('#rule-add').addEventListener('click', () => {
