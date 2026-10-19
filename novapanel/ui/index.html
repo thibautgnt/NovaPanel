@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>NovaPanel</title>
+<link rel="stylesheet" href="style.css">
+<script src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script type="importmap">{ "imports": { "three": "./vendor/three.module.min.js" } }</script>
+</head>
+<body>
+<header id="titlebar">
+  <div class="brand"><img src="../assets/icon.png" alt="">NovaPanel<span class="sub">Arctis Nova Pro Wireless</span></div>
+  <div id="conn" class="chip"><span class="dot"></span><span class="label">Connexion…</span></div>
+  <div class="winbtns">
+    <button id="btn-min" title="Réduire"><svg viewBox="0 0 12 12"><path d="M2 6h8"/></svg></button>
+    <button id="btn-close" title="Fermer (reste dans la barre des tâches)"><svg viewBox="0 0 12 12"><path d="M3 3l6 6M9 3l-6 6"/></svg></button>
+  </div>
+</header>
+
+<main>
+  <section id="stage">
+    <div class="tiles">
+      <div class="tile" id="t-headset">
+        <div class="tile-head"><svg viewBox="0 0 24 24"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/></svg><span>Casque</span><em class="badge"></em></div>
+        <div class="tile-val"><span class="val">—</span><small>%</small></div>
+        <div class="meter"><i></i></div>
+      </div>
+      <div class="tile" id="t-spare">
+        <div class="tile-head"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="16" height="10" rx="2"/><path d="M21 10.5v3"/><path d="M7 10v4M10.5 10v4" /></svg><span>Batterie de rechange</span><em class="badge"></em></div>
+        <div class="tile-val"><span class="val">—</span><small>%</small></div>
+        <div class="meter"><i></i></div>
+      </div>
+      <div class="tile" id="t-vol">
+        <div class="tile-head"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg><span>Volume</span><em class="badge"></em></div>
+        <div class="tile-val"><span class="val">—</span><small>%</small></div>
+        <div class="meter"><i></i></div>
+      </div>
+      <div class="tile" id="t-mic">
+        <div class="tile-head"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg><span>Micro</span><em class="badge"></em></div>
+        <div class="tile-val"><span class="val">—</span></div>
+        <div class="meter"><i></i></div>
+      </div>
+    </div>
+
+    <div class="hero">
+      <div id="view"></div>
+      <div class="hero-cap">
+        <span id="hero-info">Écran de la base</span>
+        <div class="seg small" data-cfg="screen_mode"><button data-v="origin">SteelSeries</button><button data-v="custom">NovaPanel</button></div>
+        <button class="ghost" id="hero-black">Éteindre l'écran</button>
+      </div>
+    </div>
+
+    <div class="stage-bottom">
+      <div class="seg big-seg" data-set="anc">
+        <button data-v="0"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M6 18L18 6"/></svg>Désactivé</button>
+        <button data-v="1"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="2.5"/><path d="M7.5 7.5a6.4 6.4 0 0 0 0 9M16.5 7.5a6.4 6.4 0 0 1 0 9M4.6 4.6a10.5 10.5 0 0 0 0 14.8M19.4 4.6a10.5 10.5 0 0 1 0 14.8"/></svg>Transparence</button>
+        <button data-v="2"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4" class="fill"/></svg>Réduction de bruit</button>
+      </div>
+    </div>
+  </section>
+
+  <aside id="panel">
+    <nav id="tabs">
+      <button data-tab="audio" class="active" title="Audio"><svg viewBox="0 0 24 24"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/></svg><span>Audio</span></button>
+      <button data-tab="eq" title="Égaliseur"><svg viewBox="0 0 24 24"><path d="M5 20v-6M5 10V4M12 20v-9M12 7V4M19 20v-4M19 12V4M3 14h4M10 7h4M17 16h4"/></svg><span>Égaliseur</span></button>
+      <button data-tab="screen" title="Écran"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="11" rx="2"/><path d="M8 20h8M12 16v4"/></svg><span>Écran</span></button>
+      <button data-tab="base" title="Base"><svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="10" rx="2.5"/><circle cx="16" cy="13" r="2.5"/><path d="M6.5 11.5h5v3h-5z"/></svg><span>Base</span></button>
+      <button data-tab="auto" title="Automatisations"><svg viewBox="0 0 24 24"><path d="M13 3L4 14h7l-1 7 9-11h-7z"/></svg><span>Auto</span></button>
+      <button data-tab="settings" title="Réglages"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>Réglages</span></button>
+    </nav>
+
+    <div id="pages">
+      <!-- AUDIO -->
+      <div class="page active" data-page="audio">
+        <h2>Audio</h2>
+        <div class="card">
+          <div class="row"><label>Niveau de transparence</label><output data-out="transparency"></output></div>
+          <input type="range" min="1" max="10" data-set="transparency">
+          <p class="note" id="transp-note">S'applique en mode Transparence.</p>
+        </div>
+        <div class="card">
+          <div class="row"><label>Retour micro</label></div>
+          <div class="seg" data-set="sidetone"><button data-v="0">Off</button><button data-v="1">Bas</button><button data-v="2">Moyen</button><button data-v="3">Fort</button></div>
+          <p class="note">Votre voix renvoyée dans le casque.</p>
+        </div>
+        <div class="card">
+          <div class="row"><label>Volume du micro</label><output data-out="mic_volume"></output></div>
+          <input type="range" min="1" max="10" data-set="mic_volume">
+          <div class="row"><label>LED du micro coupé</label><output data-out="mic_led"></output></div>
+          <input type="range" min="1" max="10" data-set="mic_led">
+        </div>
+        <div class="card">
+          <div class="row"><label>Gain</label>
+            <div class="seg small" data-set="gain"><button data-v="1">Bas</button><button data-v="2">Haut</button></div></div>
+          <div class="row"><label>Extinction auto du casque</label>
+            <select data-set="auto_off"><option value="0">Jamais</option><option value="1">1 min</option><option value="2">5 min</option><option value="3">10 min</option><option value="4">15 min</option><option value="5">30 min</option><option value="6">60 min</option></select></div>
+        </div>
+      </div>
+
+      <!-- EGALISEUR -->
+      <div class="page" data-page="eq">
+        <h2>Égaliseur</h2>
+        <div class="card eq-card">
+          <svg id="eq" viewBox="0 0 400 230"></svg>
+          <div class="row"><span class="note" id="eq-hint">Double-clic sur un point&nbsp;: 0&nbsp;dB</span>
+            <button class="ghost" id="eq-flat">Remettre à plat</button></div>
+        </div>
+        <div class="card">
+          <label>Préréglages de la base</label>
+          <div class="chips" id="eq-base"></div>
+          <label>Mes courbes</label>
+          <div class="chips" id="eq-user"></div>
+          <div class="row gap"><input type="text" id="eq-name" placeholder="Nom de la courbe actuelle"><button class="primary" id="eq-save">Enregistrer</button></div>
+        </div>
+      </div>
+
+      <!-- ECRAN -->
+      <div class="page" data-page="screen">
+        <h2>Écran de la base</h2>
+        <div class="card">
+          <label>Affichage</label>
+          <div class="seg" data-cfg="screen_mode"><button data-v="origin">SteelSeries</button><button data-v="custom">NovaPanel</button></div>
+          <div id="page-pick">
+            <label>Page</label>
+            <div class="seg" data-cfg="screen_page"><button data-v="clock">Horloge</button><button data-v="music" id="page-music">Musique</button><button data-v="pc">PC</button><button data-v="rotate">Défilement</button></div>
+          </div>
+        </div>
+        <div class="card">
+          <label>Sur l'écran</label>
+          <div class="toggle-row"><span>« Micro coupé » tant que le micro est coupé</span><input type="checkbox" class="toggle" data-cfg="oled_mic_muted"></div>
+          <div class="toggle-row"><span>Annoncer le mode de réduction de bruit</span><input type="checkbox" class="toggle" data-cfg="oled_toast_anc"></div>
+          <div class="toggle-row"><span>Barre de volume (affichage NovaPanel)</span><input type="checkbox" class="toggle" data-cfg="oled_toast_volume"></div>
+        </div>
+        <div class="card">
+          <label>Écran noir</label>
+          <div class="row"><span>Après une inactivité de</span><output id="idle-out"></output></div>
+          <input type="range" min="0" max="60" step="1" data-cfg="idle_minutes">
+          <div class="toggle-row"><span>Quand le PC est verrouillé</span><input type="checkbox" class="toggle" data-cfg="black_on_lock"></div>
+          <div class="toggle-row"><span>Quand le PC se met en veille</span><input type="checkbox" class="toggle" data-cfg="black_on_sleep"></div>
+          <div class="toggle-row"><span>Quand le PC s'éteint</span><input type="checkbox" class="toggle" data-cfg="black_on_shutdown"></div>
+          <button class="wide" id="force-black">Éteindre l'écran maintenant</button>
+        </div>
+        <div class="card">
+          <div class="row"><label>Luminosité</label><output data-out="oled_brightness"></output></div>
+          <input type="range" min="1" max="10" data-set="oled_brightness">
+          <div class="row"><label>Assombrir après</label>
+            <select data-set="oled_dim_timer"><option value="0">Jamais</option><option value="1">1 min</option><option value="2">5 min</option><option value="3">10 min</option><option value="4">15 min</option><option value="5">30 min</option><option value="6">60 min</option></select></div>
+          <div class="row"><label>Accueil SteelSeries</label>
+            <div class="seg small" data-set="home_screen"><button data-v="0">Détaillé</button><button data-v="1">Simple</button></div></div>
+        </div>
+      </div>
+
+      <!-- BASE -->
+      <div class="page" data-page="base">
+        <h2>Base</h2>
+        <div class="card">
+          <div class="row"><label>Sortie ligne</label>
+            <div class="seg small" data-set="line_out"><button data-v="1">Enceintes</button><button data-v="2">Stream</button></div></div>
+          <div class="row"><label>Sans fil</label>
+            <div class="seg small" data-set="wireless_mode"><button data-v="0">Latence</button><button data-v="1">Portée</button></div></div>
+        </div>
+        <div class="card">
+          <label>Bluetooth</label>
+          <div class="row"><span>Activé au démarrage</span>
+            <div class="seg small" data-set="bt_power"><button data-v="0">Non</button><button data-v="1">Oui</button></div></div>
+          <div class="row"><span>Appel entrant</span>
+            <select data-set="bt_call"><option value="0">Ne rien faire</option><option value="1">Baisser le jeu (−12 dB)</option><option value="2">Couper le jeu</option></select></div>
+          <div class="row"><span>Téléphone</span><span id="bt-status" class="muted">—</span></div>
+        </div>
+      </div>
+
+      <!-- AUTOMATISATIONS -->
+      <div class="page" data-page="auto">
+        <h2>Automatisations</h2>
+        <div class="card">
+          <label>Égaliseur selon l'application au premier plan</label>
+          <div id="rules"></div>
+          <div class="row gap"><select id="rule-app"></select><select id="rule-eq"></select><button class="primary" id="rule-add">Ajouter</button></div>
+          <p class="note">Quand l'application passe au premier plan, sa courbe s'applique. La précédente revient quand vous la quittez.</p>
+        </div>
+        <div class="card" id="hk-card">
+          <label>Raccourcis clavier globaux</label>
+          <div class="row"><span>Changer de mode de réduction de bruit</span><input class="hotkey" data-hk="anc_cycle" readonly></div>
+          <div class="row"><span>Écran de la base noir / rallumé</span><input class="hotkey" data-hk="screen_black" readonly></div>
+          <div class="row"><span>Page suivante sur l'écran</span><input class="hotkey" data-hk="screen_page" readonly></div>
+          <p class="note">Cliquez sur un champ puis appuyez sur la combinaison. Retour arrière pour retirer le raccourci.</p>
+        </div>
+        <div class="card">
+          <label>Bulles sur l'écran du PC</label>
+          <div class="toggle-row"><span>Réduction de bruit, égaliseur auto, raccourcis</span><input type="checkbox" class="toggle" data-cfg="osd"></div>
+          <div class="toggle-row"><span>Micro coupé / activé</span><input type="checkbox" class="toggle" data-cfg="osd_mic"></div>
+        </div>
+      </div>
+
+      <!-- REGLAGES -->
+      <div class="page" data-page="settings">
+        <h2>Réglages</h2>
+        <div class="card">
+          <div class="toggle-row"><span>Lancer NovaPanel au démarrage</span><input type="checkbox" class="toggle" id="autostart"></div>
+          <div class="row"><span>Alerte batterie faible à</span>
+            <select data-cfg="low_battery_level"><option value="0">Désactivée</option><option value="1">13 %</option><option value="2">25 %</option><option value="3">38 %</option><option value="4">50 %</option></select></div>
+          <div class="toggle-row"><span>Prévenir quand la batterie de rechange est pleine</span><input type="checkbox" class="toggle" data-cfg="notify_spare_full"></div>
+        </div>
+        <div class="card" id="gg-card">
+          <label>SteelSeries GG</label>
+          <p class="note" id="gg-status">—</p>
+          <button class="wide" id="gg-toggle">—</button>
+        </div>
+        <div class="card about">
+          <div><b>NovaPanel</b> <span class="muted" id="version"></span></div>
+          <div class="note">Protocole décodé par ggoled, HeadsetControl et Arctis Sound Manager.</div>
+          <div class="note" id="fw"></div>
+          <div class="row"><a href="https://github.com/thibautgnt/NovaPanel">GitHub</a><a href="https://github.com/sponsors/thibautgnt">Soutenir le projet</a></div>
+        </div>
+      </div>
+    </div>
+  </aside>
+</main>
+<div id="toast"></div>
+<script type="module" src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            asset: NovaPanel-Windows.zip
+          - os: macos-latest
+            asset: NovaPanel-macOS.zip
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: pip install .[dev]
+      - run: python -m pytest -q
+      - run: python packaging/build.py
+      - name: Zip (Windows)
+        if: runner.os == 'Windows'
+        run: Compress-Archive -Path dist/NovaPanel -DestinationPath ${{ matrix.asset }}
+      - name: Zip (macOS)
+        if: runner.os == 'macOS'
+        run: ditto -c -k --keepParent dist/NovaPanel.app ${{ matrix.asset }}
+      - uses: actions/upload-artifact@v5
+        with:
+          name: ${{ matrix.asset }}
+          path: ${{ matrix.asset }}
+      - uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: ${{ matrix.asset }}
+          generate_release_notes: true

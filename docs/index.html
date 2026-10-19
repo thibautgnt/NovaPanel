@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NovaPanel</title>
+<meta name="description" content="Lightweight SteelSeries GG replacement for the Arctis Nova Pro Wireless: noise cancelling, equalizer, OLED screen and batteries. Windows, macOS, Linux.">
+<meta property="og:title" content="NovaPanel">
+<meta property="og:description" content="Lightweight SteelSeries GG replacement for the Arctis Nova Pro Wireless.">
+<meta property="og:image" content="https://thibautgnt.github.io/NovaPanel/social-preview.png">
+<link rel="icon" href="logo.png">
+<style>
+  :root {
+    --bg: #111214; --panel: #1b1c20; --line: #2a2c32; --text: #ececee; --muted: #8b8e96; --accent: #5b8def;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, system-ui, sans-serif; }
+  a { color: inherit; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
+  nav { display: flex; align-items: center; gap: 12px; padding: 18px 0; }
+  nav img { width: 28px; height: 28px; }
+  nav b { font-size: 17px; }
+  nav .sp { flex: 1; }
+  nav a, nav button { color: var(--muted); text-decoration: none; font: inherit; font-size: 14px; background: none; border: 0; cursor: pointer; padding: 6px 8px; }
+  nav a:hover, nav button:hover { color: var(--text); }
+  header { text-align: center; padding: 56px 0 36px; }
+  header img.logo { width: 96px; height: 96px; }
+  h1 { font-size: clamp(34px, 6vw, 52px); margin: 14px 0 8px; letter-spacing: -.02em; }
+  .tag { color: var(--muted); font-size: clamp(17px, 2.4vw, 20px); max-width: 640px; margin: 0 auto; }
+  .cta { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 30px 0 10px; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 18px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel); text-decoration: none; font-weight: 600; font-size: 15px; }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn:hover { filter: brightness(1.1); }
+  .small { color: var(--muted); font-size: 13px; }
+  .shot { display: block; width: 100%; border-radius: 12px; border: 1px solid var(--line); box-shadow: 0 30px 80px rgba(0, 0, 0, .5); margin: 34px 0 0; }
+  section { padding: 64px 0 0; }
+  h2 { font-size: 26px; margin: 0 0 22px; letter-spacing: -.01em; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; }
+  .card h3 { margin: 0 0 6px; font-size: 16px; }
+  .card p { margin: 0; color: var(--muted); font-size: 14.5px; }
+  .note { border-left: 3px solid var(--accent); background: var(--panel); padding: 14px 18px; border-radius: 0 8px 8px 0; color: var(--muted); }
+  .note b { color: var(--text); }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .pair img { width: 100%; border-radius: 10px; border: 1px solid var(--line); }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-weight: 500; }
+  td.c, th.c { text-align: center; }
+  footer { padding: 70px 0 40px; color: var(--muted); font-size: 13px; text-align: center; }
+  html[data-lang="en"] [lang="fr"], html[data-lang="fr"] [lang="en"] { display: none !important; }
+  @media (max-width: 640px) { .pair { grid-template-columns: 1fr; } nav .gh { display: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <img src="logo.png" alt=""><b>NovaPanel</b><span class="sp"></span>
+    <a class="gh" href="https://github.com/thibautgnt/NovaPanel">GitHub</a>
+    <a href="https://github.com/sponsors/thibautgnt"><span lang="en">Sponsor</span><span lang="fr">Soutenir</span></a>
+    <button id="lang" type="button"><span lang="en">Français</span><span lang="fr">English</span></button>
+  </nav>
+
+  <header>
+    <img class="logo" src="logo.png" alt="NovaPanel logo">
+    <h1>NovaPanel</h1>
+    <p class="tag" lang="en">A lightweight SteelSeries GG replacement for the Arctis Nova Pro Wireless. Noise cancelling, equalizer, base station screen and batteries, without GG in the background.</p>
+    <p class="tag" lang="fr">Un remplaçant léger de SteelSeries GG pour l'Arctis Nova Pro Wireless. Réduction de bruit, égaliseur, écran de la base et batteries, sans GG en arrière-plan.</p>
+    <div class="cta">
+      <a class="btn primary" href="https://github.com/thibautgnt/NovaPanel/releases/latest/download/NovaPanel-Windows.zip"><span lang="en">Download for Windows</span><span lang="fr">Télécharger pour Windows</span></a>
+      <a class="btn" href="https://github.com/thibautgnt/NovaPanel/releases/latest/download/NovaPanel-macOS.zip"><span lang="en">Download for macOS</span><span lang="fr">Télécharger pour macOS</span></a>
+      <a class="btn" href="https://github.com/thibautgnt/NovaPanel"><span lang="en">Source code</span><span lang="fr">Code source</span></a>
+    </div>
+    <p class="small"><span lang="en">Free and open source · MIT license · Linux: install from source</span><span lang="fr">Gratuit et open source · licence MIT · Linux : installation depuis les sources</span></p>
+    <img class="shot" src="screenshot.png" alt="NovaPanel">
+  </header>
+
+  <section>
+    <p class="note" lang="en"><b>For people who don't use SteelSeries Sonar.</b> Sonar (game / chat / media mixer, spatial audio) is part of GG and needs it running. If you rely on Sonar, keep GG. NovaPanel replaces everything else.</p>
+    <p class="note" lang="fr"><b>Pour ceux qui n'utilisent pas SteelSeries Sonar.</b> Sonar (mixeur jeu / chat / média, son spatial) fait partie de GG et en a besoin. Si vous utilisez Sonar, gardez GG. NovaPanel remplace tout le reste.</p>
+  </section>
+
+  <section>
+    <h2><span lang="en">What it does</span><span lang="fr">Ce qu'il fait</span></h2>
+    <div class="grid">
+      <div class="card"><h3><span lang="en">Headset</span><span lang="fr">Casque</span></h3>
+        <p lang="en">Noise cancelling and transparency, sidetone, mic volume, mute LED, gain, auto power-off.</p>
+        <p lang="fr">Réduction de bruit et transparence, retour micro, volume du micro, LED, gain, extinction auto.</p></div>
+      <div class="card"><h3><span lang="en">10-band equalizer</span><span lang="fr">Égaliseur 10 bandes</span></h3>
+        <p lang="en">Drag the curve, use the base presets, save your own curves, switch them per app.</p>
+        <p lang="fr">Courbe à glisser, préréglages de la base, courbes perso, bascule automatique par application.</p></div>
+      <div class="card"><h3><span lang="en">Base station screen</span><span lang="fr">Écran de la base</span></h3>
+        <p lang="en">Black when idle or locked, "mic muted" warning, clock, now playing, CPU / RAM.</p>
+        <p lang="fr">Noir quand le PC est inactif ou verrouillé, alerte micro coupé, horloge, musique, CPU / RAM.</p></div>
+      <div class="card"><h3><span lang="en">Batteries</span><span lang="fr">Batteries</span></h3>
+        <p lang="en">Tray icon with the headset level, low battery alert, spare battery full notification.</p>
+        <p lang="fr">Niveau du casque dans la zone de notification, alerte batterie faible, rechange pleine.</p></div>
+      <div class="card"><h3><span lang="en">Shortcuts</span><span lang="fr">Raccourcis</span></h3>
+        <p lang="en">Global hotkeys for noise cancelling mode, black screen and screen pages.</p>
+        <p lang="fr">Raccourcis globaux pour le mode de réduction de bruit, l'écran noir et les pages.</p></div>
+      <div class="card"><h3><span lang="en">No GG needed</span><span lang="fr">Sans GG</span></h3>
+        <p lang="en">Talks to the base station over USB. Stop GG in one click, bring it back for firmware updates.</p>
+        <p lang="fr">Parle à la base en USB. Arrêtez GG en un clic, relancez-le pour les mises à jour du firmware.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="pair">
+      <img src="screenshot-eq.png" alt="Equalizer">
+      <img src="screenshot-screen.png" alt="Base station screen">
+    </div>
+  </section>
+
+  <section>
+    <h2><span lang="en">Compatibility</span><span lang="fr">Compatibilité</span></h2>
+    <table>
+      <tr><th></th><th class="c">Windows</th><th class="c">macOS</th><th class="c">Linux</th></tr>
+      <tr><td><span lang="en">Headset, equalizer, screen, batteries</span><span lang="fr">Casque, égaliseur, écran, batteries</span></td><td class="c">✓</td><td class="c">✓</td><td class="c">✓</td></tr>
+      <tr><td><span lang="en">Black screen when idle / locked / asleep</span><span lang="fr">Écran noir inactivité / verrouillage / veille</span></td><td class="c">✓</td><td class="c">✓</td><td class="c">–</td></tr>
+      <tr><td><span lang="en">Per-app equalizer</span><span lang="fr">Égaliseur par application</span></td><td class="c">✓</td><td class="c">✓</td><td class="c">–</td></tr>
+      <tr><td><span lang="en">Now playing, global shortcuts, GG switch</span><span lang="fr">Musique en cours, raccourcis, interrupteur GG</span></td><td class="c">✓</td><td class="c">–</td><td class="c">–</td></tr>
+    </table>
+    <p class="small"><span lang="en">Arctis Nova Pro Wireless base station (USB 1038:12E0; Xbox versions 12E5 / 225D use the same protocol). The wired Nova Pro is not supported.</span><span lang="fr">Base de l'Arctis Nova Pro Wireless (USB 1038:12E0 ; les versions Xbox 12E5 / 225D utilisent le même protocole). La Nova Pro filaire n'est pas prise en charge.</span></p>
+  </section>
+
+  <footer>
+    <span lang="en">Unofficial project, not affiliated with SteelSeries.</span><span lang="fr">Projet non officiel, sans lien avec SteelSeries.</span>
+    · <a href="https://github.com/thibautgnt/NovaPanel">GitHub</a> · <a href="https://github.com/sponsors/thibautgnt"><span lang="en">Sponsor</span><span lang="fr">Soutenir</span></a>
+  </footer>
+</div>
+<script>
+  const root = document.documentElement;
+  const set = l => { root.dataset.lang = l; root.lang = l; };
+  let saved = null;
+  try { saved = localStorage.getItem('lang'); } catch {}
+  set(saved || ((navigator.language || '').startsWith('fr') ? 'fr' : 'en'));
+  document.getElementById('lang').onclick = () => {
+    const l = root.dataset.lang === 'fr' ? 'en' : 'fr';
+    set(l);
+    try { localStorage.setItem('lang', l); } catch {}
+  };
+</script>
+</body>
+</html>

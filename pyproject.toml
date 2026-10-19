@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "novapanel"
+dynamic = ["version"]
+description = "Lightweight SteelSeries GG replacement for the Arctis Nova Pro Wireless: ANC, EQ, OLED screen, batteries."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Thibaut Genet" }]
+requires-python = ">=3.11"
+keywords = ["steelseries", "arctis", "arctis-nova-pro", "headset", "oled", "equalizer", "hid", "steelseries-gg"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: X11 Applications :: Qt",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: MacOS",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Topic :: Multimedia :: Sound/Audio",
+]
+dependencies = [
+    "hidapi>=0.14",
+    "PySide6>=6.6",
+    "Pillow>=10",
+    "psutil>=5.9",
+    "winrt-Windows.Media.Control>=2.0; sys_platform == 'win32'",
+    "winrt-Windows.Foundation>=2.0; sys_platform == 'win32'",
+    "winrt-Windows.Foundation.Collections>=2.0; sys_platform == 'win32'",
+    "pyobjc-framework-Cocoa>=10; sys_platform == 'darwin'",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "pyinstaller>=6"]
+
+[project.gui-scripts]
+novapanel = "novapanel.app:main"
+
+[project.urls]
+Homepage = "https://github.com/thibautgnt/NovaPanel"
+Issues = "https://github.com/thibautgnt/NovaPanel/issues"
+Sponsor = "https://github.com/sponsors/thibautgnt"
+
+[tool.setuptools]
+packages = ["novapanel", "novapanel.system"]
+
+[tool.setuptools.dynamic]
+version = { attr = "novapanel.__version__" }
+
+[tool.setuptools.package-data]
+novapanel = ["ui/*", "ui/vendor/*", "fonts/*", "assets/*"]

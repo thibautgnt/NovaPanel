@@ -1,0 +1,4 @@
+# Arctis Nova Pro Wireless (PC, Xbox, Xbox blanc) : acces a la base pour l'utilisateur connecte
+SUBSYSTEM=="hidraw", ATTRS{idVendor}=="1038", ATTRS{idProduct}=="12e0", TAG+="uaccess"
+SUBSYSTEM=="hidraw", ATTRS{idVendor}=="1038", ATTRS{idProduct}=="12e5", TAG+="uaccess"
+SUBSYSTEM=="hidraw", ATTRS{idVendor}=="1038", ATTRS{idProduct}=="225d", TAG+="uaccess"
