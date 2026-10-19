@@ -28,7 +28,7 @@ jobs:
           $version = python -c "import novapanel; print(novapanel.__version__)"
           & $iscc "/DVersion=$version" packaging\windows\novapanel.iss
           Compress-Archive -Path dist/NovaPanel -DestinationPath dist/NovaPanel-Windows-portable.zip
-      - uses: actions/attest-build-provenance@v2
+      - uses: actions/attest-build-provenance@v4
         with:
           subject-path: |
             dist/NovaPanel-Setup.exe
@@ -83,7 +83,7 @@ jobs:
           echo "MACOS_NOTARY_PROFILE=novapanel" >> "$GITHUB_ENV"
           echo "NOTARY_KEYCHAIN=$KC" >> "$GITHUB_ENV"
       - run: packaging/macos/make_dmg.sh
-      - uses: actions/attest-build-provenance@v2
+      - uses: actions/attest-build-provenance@v4
         with:
           subject-path: dist/NovaPanel.dmg
       - uses: actions/upload-artifact@v5
