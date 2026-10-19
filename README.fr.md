@@ -20,6 +20,8 @@ Réduction de bruit, égaliseur, écran OLED de la base et batteries, sans GG en
 
 <img src="docs/fr/screenshot.png" width="860" alt="Fenêtre principale de NovaPanel">
 
+**[Essayer la démo en direct](https://thibautgnt.github.io/NovaPanel/)** dans le navigateur, sans casque.
+
 </div>
 
 ## Pourquoi

@@ -33,7 +33,13 @@
   .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
   .btn:hover { filter: brightness(1.1); }
   .small { color: var(--muted); font-size: 13px; }
-  .shot { display: block; width: 100%; border-radius: 12px; border: 1px solid var(--line); box-shadow: 0 30px 80px rgba(0, 0, 0, .5); margin: 34px 0 0; }
+  .demo { position: relative; aspect-ratio: 1180 / 760; overflow: hidden; border-radius: 12px; border: 1px solid var(--line); background: #111214; box-shadow: 0 30px 80px rgba(0, 0, 0, .5); margin: 34px 0 0; }
+  .demo .shot { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .demo iframe { position: absolute; inset: 0 auto auto 0; width: 1180px; height: 760px; border: 0; transform-origin: 0 0; opacity: 0; transition: opacity .3s; }
+  .demo.live iframe { opacity: 1; }
+  .demo .play { position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%); box-shadow: 0 10px 30px rgba(0, 0, 0, .45); cursor: pointer; font-family: inherit; }
+  .demo.live .play, .demo-hint { display: none; }
+  .demo.live + .demo-hint { display: block; margin-top: 12px; }
   section { padding: 64px 0 0; }
   h2 { font-size: 26px; margin: 0 0 22px; letter-spacing: -.01em; }
   .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
@@ -87,8 +93,12 @@
       <a class="btn" href="https://github.com/thibautgnt/NovaPanel"><span lang="en">Source code</span><span lang="fr">Code source</span></a>
     </div>
     <p class="small"><span lang="en">Free and open source · MIT license · Linux: install from source</span><span lang="fr">Gratuit et open source · licence MIT · Linux : installation depuis les sources</span></p>
-    <img lang="en" class="shot" src="screenshot.png" alt="NovaPanel">
+    <div class="demo" id="demo">
+      <img lang="en" class="shot" src="screenshot.png" alt="NovaPanel">
       <img lang="fr" class="shot" src="fr/screenshot.png" alt="NovaPanel">
+      <button class="btn primary play" type="button"><span lang="en">Try the live demo</span><span lang="fr">Essayer la démo</span></button>
+    </div>
+    <p class="small demo-hint"><span lang="en">Live demo in your browser, with a simulated base station. Scroll over the base to turn the dial, click the Mic tile to mute.</span><span lang="fr">Démo en direct dans le navigateur, avec une base simulée. Faites défiler sur la base pour tourner la molette, cliquez sur la tuile Micro pour le couper.</span></p>
   </header>
 
   <section>
@@ -203,10 +213,33 @@
         box.append(el);
       });
   }
+  const demo = document.getElementById('demo');
+  let frame = null;
+  function startDemo() {
+    const play = demo.querySelector('.play');
+    play.disabled = true;
+    play.querySelectorAll('span').forEach(s => { s.dataset.label ??= s.textContent; s.textContent = s.lang === 'fr' ? 'Chargement…' : 'Loading…'; });
+    frame?.remove();
+    frame = document.createElement('iframe');
+    frame.title = 'NovaPanel demo';
+    frame.src = `demo/?lang=${root.dataset.lang}`;
+    frame.addEventListener('demoready', () => demo.classList.add('live'));
+    frame.addEventListener('demofailed', () => {
+      frame.remove();
+      play.disabled = false;
+      play.querySelectorAll('span').forEach(s => { s.textContent = s.dataset.label; });
+    });
+    demo.append(frame);
+    fit();
+  }
+  const fit = () => { if (frame) frame.style.transform = `scale(${demo.clientWidth / 1180})`; };
+  new ResizeObserver(fit).observe(demo);
+  demo.querySelector('.play').onclick = startDemo;
   document.getElementById('lang').onclick = () => {
     const l = root.dataset.lang === 'fr' ? 'en' : 'fr';
     set(l);
     showReleases();
+    if (frame) frame.src = `demo/?lang=${l}`;
     try { localStorage.setItem('lang', l); } catch {}
   };
 </script>
