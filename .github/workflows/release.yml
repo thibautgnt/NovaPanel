@@ -19,6 +19,10 @@ jobs:
           python-version: "3.12"
       - run: pip install .[dev]
       - run: python packaging/build.py
+      - run: |
+          python packaging/release_notes.py "$GITHUB_REF_NAME" > release-notes.md
+          echo "VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"
+        shell: bash
       - name: Installer
         run: |
           $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
@@ -43,7 +47,8 @@ jobs:
           files: |
             dist/NovaPanel-Setup.exe
             dist/NovaPanel-Windows-portable.zip
-          generate_release_notes: true
+          body_path: release-notes.md
+          name: NovaPanel ${{ env.VERSION }}
 
   macos:
     runs-on: macos-latest
@@ -56,6 +61,10 @@ jobs:
           python-version: "3.12"
       - run: pip install .[dev]
       - run: python packaging/build.py
+      - run: |
+          python packaging/release_notes.py "$GITHUB_REF_NAME" > release-notes.md
+          echo "VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"
+        shell: bash
       - run: brew install create-dmg
       - name: Signing certificate
         if: env.MACOS_CERT_P12 != ''
@@ -91,7 +100,8 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: dist/NovaPanel.dmg
-          generate_release_notes: true
+          body_path: release-notes.md
+          name: NovaPanel ${{ env.VERSION }}
 
   checksums:
     needs: [windows, macos]

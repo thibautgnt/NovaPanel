@@ -4,8 +4,11 @@ All notable changes to NovaPanel. The format follows [Keep a Changelog](https://
 
 ## [Unreleased]
 
+### Added
+- Release notes on the website, taken from this changelog.
+
 ### Fixed
-- App and curve names in the automation lists are no longer inserted as HTML.
+- App and curve names in the automation lists, and the equalizer graph, are no longer built as HTML.
 
 ## [1.1.0] - 2026-10-19
 
