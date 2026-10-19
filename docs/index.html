@@ -38,7 +38,7 @@
   .demo iframe { position: absolute; inset: 0 auto auto 0; width: 1180px; height: 760px; border: 0; transform-origin: 0 0; opacity: 0; transition: opacity .3s; }
   .demo.live iframe { opacity: 1; }
   .demo .play { position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%); box-shadow: 0 10px 30px rgba(0, 0, 0, .45); cursor: pointer; font-family: inherit; }
-  .demo.live .play, .demo-hint { display: none; }
+  .demo.live .play, .demo.auto .play, .demo-hint { display: none; }
   .demo.live + .demo-hint { display: block; margin-top: 12px; }
   section { padding: 64px 0 0; }
   h2 { font-size: 26px; margin: 0 0 22px; letter-spacing: -.01em; }
@@ -226,6 +226,7 @@
     frame.addEventListener('demoready', () => demo.classList.add('live'));
     frame.addEventListener('demofailed', () => {
       frame.remove();
+      demo.classList.remove('auto');
       play.disabled = false;
       play.querySelectorAll('span').forEach(s => { s.textContent = s.dataset.label; });
     });
@@ -235,6 +236,11 @@
   const fit = () => { if (frame) frame.style.transform = `scale(${demo.clientWidth / 1180})`; };
   new ResizeObserver(fit).observe(demo);
   demo.querySelector('.play').onclick = startDemo;
+  // ~10 Mo a telecharger : lancement automatique seulement sur grand ecran sans economiseur de donnees
+  if (matchMedia('(min-width: 760px)').matches && !navigator.connection?.saveData) {
+    demo.classList.add('auto');
+    startDemo();
+  }
   document.getElementById('lang').onclick = () => {
     const l = root.dataset.lang === 'fr' ? 'en' : 'fr';
     set(l);
