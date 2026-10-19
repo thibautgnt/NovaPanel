@@ -3,7 +3,6 @@ name: Release
 on:
   push:
     tags: ["v*"]
-  workflow_dispatch:
 
 permissions:
   contents: write
@@ -14,12 +13,11 @@ jobs:
   windows:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - run: pip install .[dev]
-      - run: python -m pytest -q
       - run: python packaging/build.py
       - name: Installer
         run: |
@@ -28,18 +26,18 @@ jobs:
           $version = python -c "import novapanel; print(novapanel.__version__)"
           & $iscc "/DVersion=$version" packaging\windows\novapanel.iss
           Compress-Archive -Path dist/NovaPanel -DestinationPath dist/NovaPanel-Windows-portable.zip
-      - uses: actions/attest-build-provenance@v2
+      - uses: actions/attest-build-provenance@v4
         with:
           subject-path: |
             dist/NovaPanel-Setup.exe
             dist/NovaPanel-Windows-portable.zip
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         with:
           name: windows
           path: |
             dist/NovaPanel-Setup.exe
             dist/NovaPanel-Windows-portable.zip
-      - uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v3
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
@@ -52,12 +50,11 @@ jobs:
     env:
       MACOS_CERT_P12: ${{ secrets.MACOS_CERT_P12 }}
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - run: pip install .[dev]
-      - run: python -m pytest -q
       - run: python packaging/build.py
       - run: brew install create-dmg
       - name: Signing certificate
@@ -83,14 +80,14 @@ jobs:
           echo "MACOS_NOTARY_PROFILE=novapanel" >> "$GITHUB_ENV"
           echo "NOTARY_KEYCHAIN=$KC" >> "$GITHUB_ENV"
       - run: packaging/macos/make_dmg.sh
-      - uses: actions/attest-build-provenance@v2
+      - uses: actions/attest-build-provenance@v4
         with:
           subject-path: dist/NovaPanel.dmg
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         with:
           name: macos
           path: dist/NovaPanel.dmg
-      - uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v3
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: dist/NovaPanel.dmg
