@@ -12,6 +12,8 @@ English · [Français](README.fr.md)
 [![Release](https://img.shields.io/github/v/release/thibautgnt/NovaPanel?label=release&color=5b8def)](https://github.com/thibautgnt/NovaPanel/releases/latest)
 [![Downloads](https://img.shields.io/github/downloads/thibautgnt/NovaPanel/total?color=5b8def)](https://github.com/thibautgnt/NovaPanel/releases)
 [![CI](https://github.com/thibautgnt/NovaPanel/actions/workflows/ci.yml/badge.svg)](https://github.com/thibautgnt/NovaPanel/actions/workflows/ci.yml)
+[![Notarized](https://img.shields.io/badge/macOS-notarized-success?logo=apple)](SECURITY.md)
+[![Security policy](https://img.shields.io/badge/security-policy-success)](SECURITY.md)
 [![License: MIT](https://img.shields.io/github/license/thibautgnt/NovaPanel?color=5b8def)](LICENSE)
 ![Windows | macOS | Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
 [![Sponsor](https://img.shields.io/badge/sponsor-%E2%9D%A4-db61a2?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/thibautgnt)
@@ -153,6 +155,10 @@ Base station screen font: [Barlow](https://github.com/jpt/barlow) (SIL Open Font
 ## Support
 
 NovaPanel is free and open source. If it saves you from running GG, you can [sponsor the project on GitHub](https://github.com/sponsors/thibautgnt).
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) and the [changelog](CHANGELOG.md).
 
 ## License
 
