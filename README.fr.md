@@ -43,6 +43,7 @@ SteelSeries GG est une application lourde, avec plusieurs services en arrière-p
 - **Batteries** : icône dans la zone de notification avec le niveau du casque, alerte de batterie faible, notification quand la batterie de rechange est pleine.
 - **Automatisations** : égaliseur par application (bascule quand un jeu passe au premier plan), raccourcis globaux (`Ctrl+Alt+N` mode de réduction de bruit, `Ctrl+Alt+B` écran noir, `Ctrl+Alt+P` écran suivant).
 - Interface **en français et en anglais**, selon la langue du système.
+- **Mises à jour** : prévient quand une nouvelle version sort (désactivable). Se lance avec l'ordinateur une fois installé.
 - **Interrupteur GG** : arrête GG et l'empêche de démarrer avec Windows, ou le relance pour les mises à jour du firmware.
 
 <table>
@@ -65,7 +66,7 @@ L'installateur n'est pas encore signé : Windows SmartScreen peut demander une c
 
 Téléchargez **[NovaPanel.dmg](https://github.com/thibautgnt/NovaPanel/releases/latest/download/NovaPanel.dmg)**, ouvrez-le et glissez NovaPanel dans *Applications*.
 
-L'application n'est pas encore notarisée : la première fois, macOS refuse de l'ouvrir. Allez dans *Réglages Système → Confidentialité et sécurité* et cliquez sur *Ouvrir quand même*.
+L'application est signée et notarisée par Apple : elle s'ouvre comme n'importe quelle autre.
 
 ### Linux
 
@@ -118,6 +119,15 @@ Les réglages du casque et de la base sont dans la base. Ceux de NovaPanel sont 
 
 **Comment mettre à jour le firmware de la base ?**
 Les mises à jour du firmware passent encore par GG. Utilisez *Réactiver GG* dans **Réglages**, faites la mise à jour, puis arrêtez-le à nouveau.
+
+## Sécurité
+
+- Ni télémétrie, ni compte. Sa seule requête réseau est une vérification des nouvelles versions sur GitHub, désactivable ; rien n'est téléchargé ni installé sans vous.
+- L'image disque macOS est signée avec un Developer ID et notarisée par Apple.
+- Chaque version contient `SHA256SUMS.txt`, et les fichiers compilés par GitHub Actions ont une attestation de provenance (`gh attestation verify <fichier> --repo thibautgnt/NovaPanel`).
+- Le code est analysé par CodeQL et les dépendances sont tenues à jour par Dependabot.
+
+Détails et signalement de failles : [SECURITY.md](SECURITY.md).
 
 ## Compiler
 

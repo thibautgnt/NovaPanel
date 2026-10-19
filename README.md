@@ -43,6 +43,7 @@ SteelSeries GG is a heavy app with several background services, only to change a
 - **Batteries**: tray icon with the headset level, low battery alert, notification when the spare battery is full.
 - **Automation**: per-app equalizer (switches when a game comes to the foreground), global shortcuts (`Ctrl+Alt+N` noise cancelling mode, `Ctrl+Alt+B` black screen, `Ctrl+Alt+P` next screen).
 - **English and French** interface, following the system language.
+- **Updates**: tells you when a new version is out (can be turned off). Starts with your computer once installed.
 - **GG switch**: stop GG and keep it from starting with Windows, or bring it back for firmware updates.
 
 <table>
@@ -65,7 +66,7 @@ The installer is not code-signed yet: Windows SmartScreen may ask you to confirm
 
 Download **[NovaPanel.dmg](https://github.com/thibautgnt/NovaPanel/releases/latest/download/NovaPanel.dmg)**, open it and drag NovaPanel to *Applications*.
 
-The app is not notarized yet: the first time, macOS refuses to open it. Go to *System Settings → Privacy & Security* and click *Open Anyway*.
+The app is signed and notarized by Apple: it opens like any other app.
 
 ### Linux
 
@@ -118,6 +119,15 @@ Headset and base station settings live in the base station. NovaPanel's own sett
 
 **How do I update the base station firmware?**
 Firmware updates still need GG. Use *Reactivate GG* in **Settings**, update, then stop it again.
+
+## Security
+
+- No telemetry, no account. Its only network request is an optional check for new versions on GitHub; nothing is downloaded or installed without you.
+- The macOS disk image is signed with a Developer ID and notarized by Apple.
+- Every release ships `SHA256SUMS.txt`, and the files built by GitHub Actions carry a build provenance attestation (`gh attestation verify <file> --repo thibautgnt/NovaPanel`).
+- Code is scanned with CodeQL, and dependencies are kept up to date by Dependabot.
+
+Details and vulnerability reporting: [SECURITY.md](SECURITY.md).
 
 ## Build
 
