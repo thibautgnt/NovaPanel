@@ -48,6 +48,20 @@
   th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); }
   th { color: var(--muted); font-weight: 500; }
   td.c, th.c { text-align: center; }
+  .rel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 20px 22px; margin-bottom: 14px; }
+  .rel-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .rel-head h3 { margin: 0; font-size: 19px; }
+  .rel-head time { color: var(--muted); font-size: 13.5px; }
+  .badge { font-size: 12px; font-weight: 600; color: var(--accent); border: 1px solid var(--accent); border-radius: 999px; padding: 1px 9px; }
+  .rel-body { color: #c9ccd3; font-size: 15px; }
+  .rel-body h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 16px 0 6px; }
+  .rel-body ul { margin: 0; padding-left: 20px; }
+  .rel-body li { margin: 3px 0; }
+  .rel-body code { background: #26282e; border-radius: 4px; padding: 1px 5px; font-size: 13.5px; }
+  .rel-dl { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+  .rel-dl a { font-size: 13.5px; padding: 6px 12px; border-radius: 7px; border: 1px solid var(--line); text-decoration: none; }
+  .rel-dl a:hover { background: #24262b; }
+  #releases .more { color: var(--accent); text-decoration: none; font-size: 14.5px; }
   footer { padding: 70px 0 40px; color: var(--muted); font-size: 13px; text-align: center; }
   html[data-lang="en"] [lang="fr"], html[data-lang="fr"] [lang="en"] { display: none !important; }
   @media (max-width: 640px) { .pair { grid-template-columns: 1fr; } nav .gh { display: none; } }
@@ -115,6 +129,12 @@
     </div>
   </section>
 
+  <section id="releases">
+    <h2><span lang="en">Release notes</span><span lang="fr">Notes de version</span></h2>
+    <div id="release-list"></div>
+    <a class="more" href="https://github.com/thibautgnt/NovaPanel/releases"><span lang="en">All releases →</span><span lang="fr">Toutes les versions →</span></a>
+  </section>
+
   <section>
     <h2><span lang="en">Compatibility</span><span lang="fr">Compatibilité</span></h2>
     <table>
@@ -138,9 +158,55 @@
   let saved = null;
   try { saved = localStorage.getItem('lang'); } catch {}
   set(saved || ((navigator.language || '').startsWith('fr') ? 'fr' : 'en'));
+  // notes de version : celles des releases GitHub, ecrites a partir du CHANGELOG
+  const fmt = d => new Date(d).toLocaleDateString(root.dataset.lang, { year: 'numeric', month: 'long', day: 'numeric' });
+  fetch('https://api.github.com/repos/thibautgnt/NovaPanel/releases?per_page=5', { headers: { Accept: 'application/vnd.github.html+json' } })
+    .then(r => r.ok ? r.json() : [])
+    .then(list => { releases = list; showReleases(); })
+    .catch(() => {});
+  let releases = [];
+  function showReleases() {
+      const box = document.getElementById('release-list');
+      box.replaceChildren();
+      releases.filter(r => !r.draft && !r.prerelease).forEach((r, i) => {
+        const el = document.createElement('article');
+        el.className = 'rel';
+        const head = document.createElement('div');
+        head.className = 'rel-head';
+        const h = document.createElement('h3');
+        h.textContent = r.name || r.tag_name;
+        const time = document.createElement('time');
+        time.dateTime = r.published_at;
+        time.textContent = fmt(r.published_at);
+        head.append(h, time);
+        if (i === 0) {
+          const b = document.createElement('span');
+          b.className = 'badge';
+          b.textContent = root.dataset.lang === 'fr' ? 'Dernière version' : 'Latest';
+          head.append(b);
+        }
+        const body = document.createElement('div');
+        body.className = 'rel-body';
+        // body_html est deja assaini par GitHub ; on n'en garde que des noeuds inertes
+        const doc = new DOMParser().parseFromString(r.body_html || '', 'text/html');
+        doc.querySelectorAll('script, style, iframe').forEach(n => n.remove());
+        body.append(...doc.body.childNodes);
+        const dl = document.createElement('div');
+        dl.className = 'rel-dl';
+        r.assets.filter(a => /\.(exe|dmg|zip)$/.test(a.name)).forEach(a => {
+          const l = document.createElement('a');
+          l.href = a.browser_download_url;
+          l.textContent = a.name;
+          dl.append(l);
+        });
+        el.append(head, body, dl);
+        box.append(el);
+      });
+  }
   document.getElementById('lang').onclick = () => {
     const l = root.dataset.lang === 'fr' ? 'en' : 'fr';
     set(l);
+    showReleases();
     try { localStorage.setItem('lang', l); } catch {}
   };
 </script>
