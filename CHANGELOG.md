@@ -9,6 +9,7 @@ All notable changes to NovaPanel. The format follows [Keep a Changelog](https://
 - Live demo on the website: the real interface and screen rendering, with a simulated base station.
 
 ### Fixed
+- On Windows, the base station screen now turns off when the PC shuts down. It was cut off by the app closing before the black screen was sent.
 - App and curve names in the automation lists, and the equalizer graph, are no longer built as HTML.
 
 ## [1.1.0] - 2026-10-19

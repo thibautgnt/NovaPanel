@@ -228,9 +228,11 @@ class SystemWatcher:
             self._apply_hotkeys(hwnd)
             return 0
         elif msg == WM_QUERYENDSESSION:
-            return 1
-        elif msg == WM_ENDSESSION and wparam:
             self._emit("shutdown")
+            return 1
+        elif msg == WM_ENDSESSION:
+            if not wparam:
+                self._emit("resume")
             return 0
         elif msg == WM_CLOSE:
             user32.DestroyWindow(hwnd)
