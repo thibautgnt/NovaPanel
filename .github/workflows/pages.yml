@@ -30,6 +30,6 @@ jobs:
           cp -r novapanel/assets _site/assets
           sed -i 's#qrc:///qtwebchannel/qwebchannel.js#bridge.js#' _site/demo/index.html
           zip -qr _site/demo/novapanel.zip novapanel -x 'novapanel/ui/*' 'novapanel/assets/*' '*/__pycache__/*'
-      - uses: actions/upload-pages-artifact@v4
-      - uses: actions/deploy-pages@v4
+      - uses: actions/upload-pages-artifact@v5
+      - uses: actions/deploy-pages@v5
         id: deploy
